@@ -1,3 +1,42 @@
-baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Project'
+# 核心站点配置（适配你的 GitHub Pages 仓库）
+baseURL = 'https://Zero-Kq.github.io/Pages/'  # 关键：改成你的仓库访问地址
+languageCode = 'zh-CN'                       # 关键：改成中文（适配中文显示）
+title = '我的 PaperMod 博客'                 # 自定义：博客标题，可改
+
+# 必须配置：指定使用 PaperMod 主题（解决 layout 模板缺失问题）
+theme = 'PaperMod'
+
+# PaperMod 主题基础配置（可选，优化体验）
+[params]
+    author = 'Zero-Kq'                       # 自定义：你的名字/昵称
+    defaultTheme = 'auto'                   # 自动切换亮色/暗色模式
+    ShowReadingTime = true                  # 显示文章阅读时长
+    ShowPostNavLinks = true                 # 显示文章上下篇导航
+    ShowToc = true                          # 显示文章目录
+    TocOpen = false                         # 目录默认不展开
+    disableSpecial1stPost = true
+
+# 导航菜单
+[[menu.main]]
+    identifier = "home"
+    name = "首页"
+    url = "/"
+    weight = 1
+
+[[menu.main]]
+    identifier = "posts"
+    name = "文章"
+    url = "/posts/"
+    weight = 2
+
+[[menu.main]]
+    identifier = "tags"
+    name = "标签"
+    url = "/tags/"
+    weight = 3
+
+[[menu.main]]
+    identifier = "categories"
+    name = "分类"
+    url = "/categories/"
+    weight = 4
