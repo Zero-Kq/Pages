@@ -1,7 +1,7 @@
 # 核心站点配置（适配你的 GitHub Pages 仓库）
 baseURL = 'https://Zero-Kq.github.io/Pages/'  # 关键：改成你的仓库访问地址
 languageCode = 'zh-CN'                       # 关键：改成中文（适配中文显示）
-title = '我的 PaperMod 博客'                 # 自定义：博客标题，可改
+title = 'Zero'                 # 自定义：博客标题，可改
 
 # 必须配置：指定使用 PaperMod 主题（解决 layout 模板缺失问题）
 theme = 'PaperMod'
