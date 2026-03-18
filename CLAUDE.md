@@ -32,7 +32,7 @@ hugo --buildDrafts
 2. 选择 "Deploy Hugo PaperMod Site to Pages"
 3. 点击 "Run workflow"（可选择指定 Hugo 版本）
 
-默认使用 Hugo 版本 `0.146.0`。
+默认使用 Hugo 版本 `0.156.0`。
 
 ## 架构
 
@@ -58,4 +58,10 @@ hugo --buildDrafts
 
 ### 主题自定义
 
-要自定义 PaperMod，在 `layouts/` 中创建与主题结构相同的覆盖文件。将自定义 CSS 放入 `assets/css/`，然后在 `hugo.toml` 中引用或通过 Hugo 资源管道引入。
+要自定义 PaperMod，在 `layouts/` 中创建与主题结构相同的覆盖文件（如 `layouts/_default/terms.html` 覆盖分类页面）。
+
+自定义 CSS 放入 `assets/css/extended/` 目录，主题会自动加载（无需在配置中引用）。
+
+当前已覆盖的模板：
+- `layouts/_default/terms.html` - 分类/标签页面（卡片样式）
+- `assets/css/extended/terms.css` - 分类卡片样式
