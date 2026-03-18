@@ -1,0 +1,29 @@
+{{- define "main" }}
+
+{{- if .Title }}
+<header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- if .Description }}
+    <div class="post-description">
+        {{ .Description }}
+    </div>
+    {{- end }}
+</header>
+{{- end }}
+
+<div class="terms-cards">
+    {{- $type := .Type }}
+    {{- range $key, $value := .Data.Terms.Alphabetical }}
+    {{- $name := .Name }}
+    {{- $count := .Count }}
+    {{- with site.GetPage (printf "/%s/%s" $type $name) }}
+    <article class="term-card">
+        <a class="term-link" href="{{ .Permalink }}"></a>
+        <h2 class="term-title">{{ .Name }}</h2>
+        <div class="term-count">{{ $count }} 篇文章</div>
+    </article>
+    {{- end }}
+    {{- end }}
+</div>
+
+{{- end }}{{/* end main */ -}}
