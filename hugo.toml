@@ -16,6 +16,24 @@ theme = 'PaperMod'
     TocOpen = false                         # 目录默认不展开
     disableSpecial1stPost = true
 
+# 首页"欢迎"区域配置
+[params.homeInfoParams]
+    Title = "欢迎 👋"
+    Content = "这里是我的个人学习笔记，记录技术学习和成长历程。\n\n如果你觉得内容有帮助，欢迎关注我的社交媒体！"
+
+# 首页社交图标（显示在"欢迎"下方）
+[[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/Zero-Kq"
+
+[[params.socialIcons]]
+    name = "twitter"
+    url = "https://x.com/你的X用户名"
+
+[[params.socialIcons]]
+    name = "kofi"
+    url = "https://www.buymeacoffee.com/你的ID"
+
 # 导航菜单
 [[menu.main]]
     identifier = "home"
