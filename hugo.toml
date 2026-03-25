@@ -6,6 +6,10 @@ title = 'Zero'                 # 自定义：博客标题，可改
 # 必须配置：指定使用 PaperMod 主题（解决 layout 模板缺失问题）
 theme = 'PaperMod'
 
+# 启用 JSON 输出（搜索功能必需）
+[outputs]
+  home = ["HTML", "JSON"]
+
 # PaperMod 主题基础配置（可选，优化体验）
 [params]
     author = 'Zero-Kq'                       # 自定义：你的名字/昵称
@@ -43,12 +47,18 @@ theme = 'PaperMod'
 
 [[menu.main]]
     identifier = "posts"
-    name = "文章"
-    url = "/posts/"
+    name = "分类"
+    url = "/categories/"
     weight = 2
 
 [[menu.main]]
     identifier = "categories"
-    name = "分类"
-    url = "/categories/"
+    name = "文章"
+    url = "/posts/"
     weight = 3
+
+[[menu.main]]
+    identifier = "search"
+    name = "搜索"
+    url = "/search/"
+    weight = 4

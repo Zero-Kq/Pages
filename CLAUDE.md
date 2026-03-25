@@ -13,7 +13,7 @@
 ## 用户偏好
 
 1. 只修改 Hugo 模板和 CSS，不改动主题核心代码
-2. 修改模板或样式前，先提供静态 HTML 预览效果供确认，确认后再更新实际项目文件。
+2. 修改模板或样式前，先使用preview.html提供静态 HTML 预览效果供确认，确认后再更新实际项目文件。
 
 ## 命令
 
@@ -94,3 +94,16 @@ hugo --buildDrafts
 常用变量：`--gap`, `--radius`, `--entry`, `--primary`, `--secondary`, `--tertiary`, `--border`, `--header-height`, `--theme`
 
 所有颜色使用 CSS 变量，自动适配亮色/暗色主题。
+
+### 搜索功能
+
+PaperMod 内置 Fuse.js 模糊搜索，支持标题、摘要、正文内容搜索。
+
+**启用搜索：**
+1. 在 `hugo.toml` 中配置 `[outputs] home = ["HTML", "JSON"]`
+2. 创建 `content/search.md`，内容：`layout: "search"`
+3. 在导航菜单中添加搜索页面链接
+
+**搜索页面模板：** `themes/PaperMod/layouts/_default/search.html`
+
+**搜索快捷键：** `Alt + /`

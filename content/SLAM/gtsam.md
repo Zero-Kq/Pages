@@ -2,7 +2,7 @@
 title = "Gtsam 学习笔记"
 description = "关于 Gtsam 优化库的学习"
 date = 2026-03-19
-draft = true
+draft = false
 tags = ["Hugo", "PaperMod", "学习笔记"]
 categories = ["SLAM"]
 +++
