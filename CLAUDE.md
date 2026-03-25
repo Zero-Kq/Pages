@@ -10,6 +10,11 @@
 
 与用户交流时使用**中文**。
 
+## 用户偏好
+
+1. 只修改 Hugo 模板和 CSS，不改动主题核心代码
+2. 修改模板或样式前，先提供静态 HTML 预览效果供确认，确认后再更新实际项目文件。
+
 ## 命令
 
 ### 开发
@@ -32,7 +37,7 @@ hugo --buildDrafts
 2. 选择 "Deploy Hugo PaperMod Site to Pages"
 3. 点击 "Run workflow"（可选择指定 Hugo 版本）
 
-默认使用 Hugo 版本 `0.156.0`。
+默认使用 Hugo 版本 `0.146.0`。
 
 ## 架构
 
@@ -65,3 +70,27 @@ hugo --buildDrafts
 当前已覆盖的模板：
 - `layouts/_default/terms.html` - 分类/标签页面（卡片样式）
 - `assets/css/extended/terms.css` - 分类卡片样式
+
+### Hugo Taxonomy 数据获取
+
+**Categories（分类）：**
+```go
+{{- range .Data.Terms.Alphabetical }}
+{{- with site.GetPage (printf "/%s/%s" $.Type .Name) }}
+<a href="{{ .Permalink }}">{{ .Name }}</a>
+{{- end }}
+{{- end }}
+```
+
+**Tags（标签）：**
+```go
+{{- range site.Taxonomies.tags.ByCount }}
+<a href="{{ .Page.RelPermalink }}">{{ .Page.Title }} <span>{{ .Count }}</span></a>
+{{- end }}
+```
+
+### PaperMod CSS 变量
+
+常用变量：`--gap`, `--radius`, `--entry`, `--primary`, `--secondary`, `--tertiary`, `--border`, `--header-height`, `--theme`
+
+所有颜色使用 CSS 变量，自动适配亮色/暗色主题。
