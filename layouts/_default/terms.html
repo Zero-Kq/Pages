@@ -11,19 +11,34 @@
 </header>
 {{- end }}
 
-<div class="terms-cards">
-    {{- $type := .Type }}
-    {{- range $key, $value := .Data.Terms.Alphabetical }}
-    {{- $name := .Name }}
-    {{- $count := .Count }}
-    {{- with site.GetPage (printf "/%s/%s" $type $name) }}
-    <article class="term-card">
-        <a class="term-link" href="{{ .Permalink }}"></a>
-        <h2 class="term-title">{{ .Name }}</h2>
-        <div class="term-count">{{ $count }} 篇文章</div>
-    </article>
-    {{- end }}
-    {{- end }}
+<div class="terms-page-wrapper">
+    <div class="terms-main">
+        <div class="terms-cards">
+            {{- $type := .Type }}
+            {{- range $key, $value := .Data.Terms.Alphabetical }}
+            {{- $name := .Name }}
+            {{- $count := .Count }}
+            {{- with site.GetPage (printf "/%s/%s" $type $name) }}
+            <article class="term-card">
+                <a class="term-link" href="{{ .Permalink }}"></a>
+                <h2 class="term-title">{{ .Name }}</h2>
+                <div class="term-count">{{ $count }} 篇文章</div>
+            </article>
+            {{- end }}
+            {{- end }}
+        </div>
+    </div>
+
+    <aside class="terms-sidebar">
+        <h3 class="sidebar-title">Tags</h3>
+        <div class="sidebar-tags">
+            {{- range site.Taxonomies.tags.ByCount }}
+            <a href="{{ .Page.RelPermalink }}" class="sidebar-tag">
+                {{ .Page.Title }} <span class="tag-count">{{ .Count }}</span>
+            </a>
+            {{- end }}
+        </div>
+    </aside>
 </div>
 
 {{- end }}{{/* end main */ -}}

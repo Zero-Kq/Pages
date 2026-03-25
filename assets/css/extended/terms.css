@@ -2,7 +2,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--gap);
-    margin-top: var(--gap);
 }
 
 .term-card {
@@ -14,6 +13,10 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: transform 0.1s;
+}
+
+.term-card:hover {
+    border-color: var(--primary);
 }
 
 .term-card:active {
@@ -39,4 +42,98 @@
     margin-top: 8px;
     color: var(--secondary);
     font-size: 14px;
+}
+
+/* =====================
+   两栏布局
+   ===================== */
+.terms-page-wrapper {
+    display: flex;
+    gap: var(--gap);
+    margin-top: var(--gap);
+    align-items: flex-start;
+}
+
+.terms-main {
+    flex: 1;
+    min-width: 0;
+}
+
+/* =====================
+   侧边栏样式
+   ===================== */
+.terms-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height) + var(--gap));
+    max-height: calc(100vh - var(--header-height) - var(--gap) * 2);
+    overflow-y: auto;
+    padding: var(--gap);
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sidebar-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--primary);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sidebar-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 13px;
+    background: var(--tertiary);
+    color: var(--primary);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.sidebar-tag:hover {
+    background: var(--primary);
+    color: var(--theme);
+}
+
+.sidebar-tag:active {
+    transform: scale(0.95);
+}
+
+.tag-count {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+/* =====================
+   响应式适配
+   ===================== */
+@media (max-width: 900px) {
+    .terms-page-wrapper {
+        flex-direction: column;
+    }
+
+    .terms-sidebar {
+        width: 100%;
+        position: static;
+        max-height: none;
+        order: -1;
+    }
+
+    .sidebar-tags {
+        justify-content: flex-start;
+    }
 }
