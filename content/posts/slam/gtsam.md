@@ -3,7 +3,7 @@ title = "Gtsam 学习笔记"
 description = "关于 Gtsam 优化库的学习"
 date = 2026-03-19
 draft = false
-tags = ["Hugo", "PaperMod", "学习笔记"]
+tags = ["优化", "学习笔记"]
 categories = ["SLAM"]
 +++
 
@@ -72,10 +72,10 @@ graph.add(gtsam::BetweenFactor<gtsam::Pose3>(key1, key2, odom_delta, odometryNoi
 
 5. 创建 ISAM2 优化器
 ```c++
-gtsam::ISAM2 isam;
 gtsam::ISAM2Params params;
-params.relinearize_threshold = 0.01;   // 重新线性化阈值
-params.relinearize_skip = 10;          // 跳帧数
+params.relinearizeThreshold = 0.01;   // 重新线性化阈值
+params.relinearizeSkip = 10;          // 跳帧数
+gtsam::ISAM2 isam(params);
 isam.update(graph, initial_values);    // 首次更新
 ```
 
@@ -150,7 +150,7 @@ int main() {
 
 | 函数 | 说明 |
 |------|------|
-| `gtsam::symbol('x', id)` | 创建变量键，如 'x0', 'x1' |
+| `gtsam::symbol( 'x', id)` | 创建变量键，如 'x0', 'x1' |
 | `Pose3::Ypr(yaw, pitch, roll)` | 从欧拉角创建旋转 |
 | `pose1.between(pose2)` | 计算 pose1 到 pose2 的相对变换 |
 | `graph.add(Factor(...))` | 添加因子到因子图 |

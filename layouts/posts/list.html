@@ -12,7 +12,7 @@
 </header>
 {{- end }}
 
-{{- $pages := where site.RegularPages "Layout" "ne" "search" }}
+{{- $pages := .Pages }}
 
 {{- $paginator := .Paginate $pages }}
 
