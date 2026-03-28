@@ -71,6 +71,14 @@ hugo --buildDrafts
 - `layouts/_default/terms.html` - 分类/标签页面（卡片样式）
 - `assets/css/extended/terms.css` - 分类卡片样式
 
+### Mermaid 图表支持
+
+PaperMod 不内置 Mermaid.js，需手动配置：
+- `layouts/partials/extend_head.html` - 引入 Mermaid CDN 和初始化配置
+- `layouts/_default/_markup/render-codeblock.html` - 代码块渲染模板，将 mermaid 代码包裹为 `<div class="mermaid">`
+
+使用方式：Markdown 中直接写 ` ```mermaid ` 代码块即可
+
 ### Hugo Taxonomy 数据获取
 
 **Categories（分类）：**
