@@ -3,8 +3,9 @@ title = "Gtsam 学习笔记"
 description = "关于 Gtsam 优化库的学习"
 date = 2026-03-19
 draft = false
-tags = ["优化", "学习笔记"]
+tags = ["优化", "学习笔记", "C++"]
 categories = ["SLAM"]
+math = true
 +++
 
 ## 介绍Gtsam
