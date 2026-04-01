@@ -1,0 +1,33 @@
+{{- /* 右侧浮动侧边栏 */ -}}
+<aside class="sidebar-right">
+    {{- if and (.Params.ShowToc) (.TableOfContents) }}
+    <div class="sidebar-block toc-block">
+        <h3 class="sidebar-block-title">文章目录</h3>
+        <nav class="toc-nav">
+            {{ .TableOfContents }}
+        </nav>
+    </div>
+    {{- end }}
+
+    <div class="sidebar-block recent-posts-block">
+        <h3 class="sidebar-block-title">最近更新</h3>
+        <ul class="recent-posts-list">
+            {{- range first 5 (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+            <li class="recent-post-item">
+                <a href="{{ .Permalink }}" class="recent-post-link">{{ .Title }}</a>
+            </li>
+            {{- end }}
+        </ul>
+    </div>
+
+    <div class="sidebar-block tags-block">
+        <h3 class="sidebar-block-title">热门标签</h3>
+        <div class="sidebar-tags">
+            {{- range first 20 site.Taxonomies.tags.ByCount }}
+            <a href="{{ .Page.RelPermalink }}" class="sidebar-tag">
+                {{ .Page.Title }}<span class="tag-count">{{ .Count }}</span>
+            </a>
+            {{- end }}
+        </div>
+    </div>
+</aside>

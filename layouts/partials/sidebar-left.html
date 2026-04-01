@@ -1,0 +1,35 @@
+{{- /* 左侧固定侧边栏 */ -}}
+<aside class="sidebar-left">
+    {{- with site.Params.profileMode }}
+    <div class="profile-section">
+        {{- with .imageUrl }}
+        <div class="profile-avatar">
+            <img src="{{ printf "%s%s" site.BaseURL . | absURL }}" alt="{{ $.Site.Params.profileMode.imageTitle | default "头像" }}" loading="lazy">
+        </div>
+        {{- end }}
+        {{- with .title }}
+        <h2 class="profile-title">{{ . }}</h2>
+        {{- end }}
+        {{- with .description }}
+        <p class="profile-description">{{ . }}</p>
+        {{- end }}
+    </div>
+    {{- end }}
+
+    {{- if site.Menus.main }}
+    <nav class="sidebar-nav">
+        <h3 class="sidebar-nav-title">导航</h3>
+        <ul class="sidebar-nav-list">
+            {{- range site.Menus.main }}
+            <li class="sidebar-nav-item">
+                <a href="{{ .URL }}" class="sidebar-nav-link">
+                    {{ .Name }}
+                </a>
+            </li>
+            {{- end }}
+        </ul>
+    </nav>
+    {{- end }}
+
+    {{- partial "social_icons.html" (dict "align" "center") }}
+</aside>

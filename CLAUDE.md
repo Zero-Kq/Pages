@@ -103,6 +103,23 @@ PaperMod 不内置 Mermaid.js，需手动配置：
 
 所有颜色使用 CSS 变量，自动适配亮色/暗色主题。
 
+### 三栏侧边栏布局
+
+文章详情页使用三栏布局：
+- `layouts/_default/single.html` - 三栏布局模板
+- `layouts/partials/sidebar-left.html` - 左侧固定侧边栏（头像+导航+社交图标）
+- `layouts/partials/sidebar-right.html` - 右侧浮动侧边栏（TOC+最近更新+热门标签）
+- `assets/css/extended/custom.css` - 三栏布局样式
+
+头像图片放在 `static/images/avatar.jpg`，路径配置为 `images/avatar.jpg`
+
+### Hugo 配置注意点
+
+- `profileMode.enabled = true` 会触发 PaperMod 内置的首页博主信息展示，侧边栏仅需配置 title/description/imageUrl
+- 静态资源路径用 `relLangURL` 或 `printf "%s%s" site.BaseURL .` 拼接，避免 baseURL 末尾斜杠导致的重复斜杠问题
+- `partial "social_icons.html"` 需要传入 align 参数：`partial "social_icons.html" (dict "align" "center")`
+- CSS 覆盖主题宽度限制时用 `body:not(.list) .main` 选择器，只影响文章详情页
+
 ### 搜索功能
 
 PaperMod 内置 Fuse.js 模糊搜索，支持标题、摘要、正文内容搜索。
