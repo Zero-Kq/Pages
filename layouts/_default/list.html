@@ -4,6 +4,10 @@
     {{ partial "sidebar-left.html" . }}
 
     <main class="post-list-container">
+        {{- if .IsHome }}
+        {{- partial "home_info.html" . }}
+        {{- end }}
+
         {{- if not .IsHome | and .Title }}
         <header class="page-header">
             {{- partial "breadcrumbs.html" . }}
@@ -16,7 +20,12 @@
         </header>
         {{- end }}
 
-        {{- $pages := .Pages }}
+        {{- $pages := union .RegularPages .Sections }}
+        {{- if .IsHome }}
+        {{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+        {{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
+        {{- end }}
+
         {{- $paginator := .Paginate $pages }}
         {{- $term := .Data.Term }}
 

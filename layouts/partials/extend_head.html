@@ -1,3 +1,13 @@
+{{- $customCSS := resources.Get "css/extended/custom.css" }}
+{{- if $customCSS }}
+<link rel="stylesheet" href="{{ $customCSS.RelPermalink }}">
+{{- end }}
+
+{{- $termsCSS := resources.Get "css/extended/terms.css" }}
+{{- if $termsCSS }}
+<link rel="stylesheet" href="{{ $termsCSS.RelPermalink }}">
+{{- end }}
+
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
   mermaid.initialize({

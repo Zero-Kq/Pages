@@ -161,7 +161,7 @@ vector<double> cumulative_x = {
 ```
 优化后
 
-![优化效果对比](./img/Figure.png)
+![优化效果对比](/posts/slam/Figure.png)
 
 ### 关键函数速查
 

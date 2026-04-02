@@ -2,8 +2,8 @@
 title = '点云配准'
 description = "关于常用的点云配准方法对比使用"
 date = '2026-04-01'
-draft = true
-tags = ["学习笔记", "C++", "SLAM"， "雷达"]
+draft = false
+tags = ["学习笔记", "C++", "SLAM", "雷达"]
 categories = ["SLAM"]
 # weight = 1
 # slug = ""
@@ -80,16 +80,15 @@ categories = ["SLAM"]
 #### 最优配置
 
 ```yaml
-gicp:
-  correspondence_randomness: 20          # 核心调优参数
-  max_correspondence_distance: 50.0      # 核心调优参数
-  max_iterations: 500
-  transformation_epsilon: 1e-10
-  euclidean_fitness_epsilon: 0.0001
-  ransac_iterations: 1000
-  ransac_outlier_rejection_threshold: 0.05
-  transformation_rotation_epsilon: 1e-10
-  use_reciprocal_correspondences: false
+correspondence_randomness: 20          # 核心调优参数
+max_correspondence_distance: 50.0      # 核心调优参数
+max_iterations: 500
+transformation_epsilon: 1e-10
+euclidean_fitness_epsilon: 0.0001
+ransac_iterations: 1000
+ransac_outlier_rejection_threshold: 0.05
+transformation_rotation_epsilon: 1e-10
+use_reciprocal_correspondences: false
 ```
 
 #### correspondence_randomness 影响
@@ -120,13 +119,13 @@ gicp:
 
 #### 参数扫描曲线
 
-![correspondence_randomness 扫描曲线](./img/correspondence_randomness_plot.png)
+![correspondence_randomness 扫描曲线](/posts/slam/correspondence_randomness_plot.png)
 
-![max_correspondence_distance 扫描曲线](./img/max_correspondence_distance_plot.png)
+![max_correspondence_distance 扫描曲线](/posts/slam/max_correspondence_distance_plot.png)
 
 #### 双参数热力图
 
-![热力图](./img/max_correspondence_distance_vs_correspondence_randomness_heatmap.png)
+![热力图](/posts/slam/max_correspondence_distance_vs_correspondence_randomness_heatmap.png)
 
 #### 结论
 
@@ -179,7 +178,7 @@ Trans error: 2.63339 m, Rot error: 42.3897 deg
 
 #### 效果展示
 
-![GICP 效果展示](./img/GICP.png)
+![GICP 效果展示](/posts/slam/GICP.png)
 
 ---
 
@@ -232,7 +231,7 @@ Trans error: 0.000328527 m, Rot error: 0 deg
 
 #### 效果展示
 
-![NDT+GICP 匹配效果展示](./img/NDT+GICP.png)
+![NDT+GICP 匹配效果展示](/posts/slam/NDT+GICP.png)
 
 ---
 

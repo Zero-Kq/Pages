@@ -14,17 +14,20 @@
     justify-content: center;
 }
 
-/* 文章详情页的三栏布局占满整个 .main 容器宽度 */
-body:not(.list) .main {
+/* 三栏布局占满整个 .main 容器宽度 */
+.main {
     max-width: none !important;
     padding: 0 !important;
 }
 
 /* 确保文章内容区域不收缩 */
-.post-single {
+.post-single,
+.post-list-container,
+.terms-page-wrapper {
     min-width: 0;
     width: 100%;
 }
+
 
 /* =====================
    侧边栏通用样式
@@ -257,6 +260,69 @@ body:not(.list) .main {
 }
 
 /* =====================
+   列表页容器样式
+   ===================== */
+.post-list-container {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--gap);
+}
+
+.page-header {
+    margin-bottom: var(--gap);
+    padding-bottom: var(--gap);
+    border-bottom: 1px solid var(--border);
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #333;
+}
+
+.post-entry {
+    padding: var(--gap) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.post-entry:last-child {
+    border-bottom: none;
+}
+
+.post-entry h2 {
+    font-size: 18px;
+    margin: 0 0 8px 0;
+}
+
+.post-entry h2 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.post-entry h2 a:hover {
+    color: var(--primary);
+}
+
+.entry-content p {
+    color: var(--secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.entry-footer {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+.page-footer {
+    margin-top: var(--gap);
+    padding-top: var(--gap);
+    border-top: 1px solid var(--border);
+}
+
+/* =====================
    响应式适配
    ===================== */
 @media (max-width: 1200px) {
@@ -270,7 +336,9 @@ body:not(.list) .main {
         display: none;
     }
 
-    .post-single {
+    .post-single,
+    .post-list-container,
+    .terms-page-wrapper {
         width: 100%;
     }
 }
