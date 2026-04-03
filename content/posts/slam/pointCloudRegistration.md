@@ -22,7 +22,7 @@ categories = ["SLAM"]
 
 #### 原理
 
- Generalized Iterative Closest Point (GICP) 是一种改进的 ICP 算法，通过协方差矩阵优化对应点匹配，提升配准精度。
+Generalized Iterative Closest Point (GICP) 是一种改进的 ICP 算法，通过协方差矩阵优化对应点匹配，提升配准精度。
 
 #### 头文件
 
@@ -40,194 +40,164 @@ categories = ["SLAM"]
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| setMaximumIterations | 200 | 最大迭代次数，达到后停止配准 |
-| setTransformationEpsilon | 1e-10 | 变换矩阵变化的收敛阈值 |
+| setMaximumIterations | 500 | 最大迭代次数，达到后停止配准 |
+| setTransformationEpsilon | 1e-10 | 变换矩阵变化的收敛阈值，小于此值认为已收敛 |
 | setEuclideanFitnessEpsilon | 0.0001 | 点到点欧氏距离误差的收敛阈值 |
-| setMaxCorrespondenceDistance | 1.0 | 对应点搜索半径上限 |
-| setCorrespondenceRandomness | 50 | 每次迭代随机采样对应点数量 |
-| setRANSACOutlierRejectionThreshold | 0.05 | RANSAC 离群点阈值 |
-
----
-
-## 参数测试分析
-
-### GICP
-
-#### 测试概述
-
-| 指标 | 值 |
-|------|-----|
-| Baseline Score | 82.0 |
-| Best Score | 0.8919 |
-| Worst Score | 423.34 |
-| Average Score | 54.78 |
-| Score < 1 占比 | 75.6% |
-
-#### 敏感性分析
-
-| 参数 | 敏感性 | 最优值 | 建议范围 |
-|------|--------|--------|----------|
-| correspondence_randomness | **高** | 20 | 15-20 |
-| max_correspondence_distance | **高** | 50.0 | 默认值 50.0 |
-| ransac_outlier_rejection_threshold | 无 | 0.05 | 默认值 |
-| ransac_iterations | 无 | 1000 | 默认值 |
-| euclidean_fitness_epsilon | 无 | 0.0001 | 默认值 |
-| transformation_epsilon | 无 | 1e-10 | 默认值 |
-| transformation_rotation_epsilon | 无 | 1e-10 | 默认值 |
-| max_iterations | 无 | 500 | 默认值 |
-| use_reciprocal_correspondences | 无 | false | 默认值 |
-
-#### 最优配置
-
-```yaml
-correspondence_randomness: 20          # 核心调优参数
-max_correspondence_distance: 50.0      # 核心调优参数
-max_iterations: 500
-transformation_epsilon: 1e-10
-euclidean_fitness_epsilon: 0.0001
-ransac_iterations: 1000
-ransac_outlier_rejection_threshold: 0.05
-transformation_rotation_epsilon: 1e-10
-use_reciprocal_correspondences: false
-```
-
-#### correspondence_randomness 影响
-
-| 值 | Score | 影响 |
-|----|-------|------|
-| 5 | 1.27 | 较差 |
-| 10 | 79.70 | 很差 |
-| 15 | 1.03 | 接近最优 |
-| **20** | **0.89** | **最优** |
-| 25 | 396.31 | 极差 |
-| 30 | 115.96 | 很差 |
-
-呈尖锐 U 型曲线，最优点在 20 附近。
-
-#### max_correspondence_distance 影响
-
-| cr 固定值 | mcd | Score |
-|-----------|-----|-------|
-| 20 | 0.5 | 409.38 |
-| 20 | 1.0 | 357.70 |
-| 20 | 2.0 | 228.48 |
-| 20 | 3.0 | 423.34 |
-| 20 | 5.0 | 205.20 |
-| **20** | **50.0** | **0.89** |
-
-默认值 50.0 是最优选择。
-
-#### 参数扫描曲线
-
-![correspondence_randomness 扫描曲线](/posts/slam/correspondence_randomness_plot.png)
-
-![max_correspondence_distance 扫描曲线](/posts/slam/max_correspondence_distance_plot.png)
-
-#### 双参数热力图
-
-![热力图](/posts/slam/max_correspondence_distance_vs_correspondence_randomness_heatmap.png)
-
-#### 结论
-
-- `correspondence_randomness=20` + `max_correspondence_distance=50.0` 是最优配置
-- Score 从 82 降至 **0.89**
-- 其他 7 个参数保持默认值即可，无需进一步调优
+| setMaxCorrespondenceDistance | 50.0 | 对应点搜索半径上限，超过则不考虑 |
+| setCorrespondenceRandomness | 20 | 每次迭代随机采样对应点数量，影响计算效率和精度 |
+| setRANSACOutlierRejectionThreshold | 0.05 | RANSAC 离群点阈值，超过此距离的点被标记为异常值 |
+| setRANSACIterations | 1000 | RANSAC 迭代次数 |
+| setTransformationRotationEpsilon | 1e-10 | 旋转矩阵变化的收敛阈值 |
+| setUseReciprocalCorrespondences | false | 是否使用互对应关系（source-target双向匹配） |
 
 ---
 
 ## 测试结果
 
-### GICP Only
+通过将目标点云变换作为原始点云进行测试，实际变换为 T=[10, 10, 10]m, R=[90, 0, 0]deg。
 
-#### 参数配置
+初始让AI以score为基准进行调参，获得"最优参数"，但实际误差依旧很大
 
-```cpp
-gicp.setMaximumIterations(500);
-gicp.setTransformationEpsilon(1e-10);
-gicp.setEuclideanFitnessEpsilon(0.0001);
-gicp.setMaxCorrespondenceDistance(50.0);
-gicp.setCorrespondenceRandomness(100);
-gicp.setRANSACOutlierRejectionThreshold(0.05);
-```
+#### 测试概述
 
-#### 输出结果
-
-```terminal
-Method: GICP Only
-Target: 21689 points, 140.144 x 192.66 x 23.4657 m
-Source: 21689 points, 192.66 x 140.144 x 23.4657 m
-
---- Actual Transform (target -> src) ---
--4.37114e-08           -1            0           10
-           1 -4.37114e-08            0           10
-           0            0            1           10
-           0            0            0            1
-T: [10, 10, 10]
-R: [90, -0, 0] deg
-[GICP Only] Score: 82.0019, Time: 1433.34 ms
-
---- Estimated Transform (target -> src) ---
-  0.769358  -0.635887 -0.0611232    7.76722
-  0.608848   0.758862  -0.231156    10.0674
-  0.193373   0.140627   0.970995    11.3946
-        -0          0         -0          1
-T: [7.76722, 10.0674, 11.3946]
-R: [38.3571, -11.1497, 8.24071] deg
-Trans error: 2.63339 m, Rot error: 42.3897 deg
-```
+| 分类 | 参数 | 值 |
+|------|------|-----|
+| 配置 | max_correspondence_distance | 50.0 |
+| 配置 | correspondence_randomness | 20 |
+| 配置 | max_iterations | 500 |
+| 输出 | Score | 0.891884 |
+| 输出 | Time | 862.025 ms |
+| 输出 | Trans Error | 2.14007 m |
+| 输出 | Rot Error | 2.03481 deg |
 
 #### 效果展示
 
 ![GICP 效果展示](/posts/slam/GICP.png)
 
+图例：绿色=Target cloud，白色=Source cloud (before)，蓝色=Registration result
+
+#### 测试分析
+
+通过遍历调参优化 Score 指标，发现 `mcd=50, cr=20` 时 Score 可降至 0.89，但实际 Trans Error 仍达 2.14m。
+
+**Score vs Trans/Rot Error 差异原因**：
+
+1. **Score 是局部误差，Trans/Rot Error 是全局误差**
+   - GICP 优化的是点到邻近点平面的距离（局部对齐质量）
+   - 即使对应关系完全错误，只要局部结构相似，Score 也可能很低
+
+2. **对称性欺骗**
+   - 例如 180 度旋转后，点云局部结构仍然相似
+   - GICP 可能收敛到"错误但局部最优"的解
+
+3. **初始估计敏感**
+   - GICP 是局部优化算法
+   - 从单位矩阵出发，没有好的初始估计
+   - 可能收敛到错误的局部最优而非全局最优
+
+4. **mcd 太大的影响**
+   - mcd=50 太大，允许更远的对应点匹配
+   - 可能接受错误匹配，陷入局部最优
+
+---
+
+然后以Trans Error和Rot Error作为基准进行参数调整
+
+#### 测试概述
+
+| 分类 | 参数 | 值 |
+|------|------|-----|
+| 配置 | max_correspondence_distance | 17 |
+| 配置 | correspondence_randomness | 18.5 |
+| 配置 | max_iterations | 500 |
+| 输出 | Score | 2.9e-07 |
+| 输出 | Time | 777 ms |
+| 输出 | Trans Error | 0.0002 m |
+| 输出 | Rot Error | 0 deg |
+
+#### 效果展示
+
+![最优error GICP 效果展示](/posts/slam/GICP_minerror.png)
+
+#### 分析总结
+
+| mcd | cr | Trans Error | Rot Error | Score |
+|-----|----|-------------|-----------|-------|
+| 50 | 20 | 2.14m | 2.03deg | 0.89 |
+| **17** | **18.5** | **0.0002m** | **0deg** | **2.9e-07** |
+
+优化目标从 Score 改为 Trans/Rot Error 后，找到真正有效的参数组合。
+
+**关键发现**：
+
+1. **Score 与 Trans/Rot Error 无直接关联**
+   - Score 是点到平面距离的 RMSE（局部对齐质量）
+   - Trans/Rot Error 是全局位姿精度
+   - Score 低不等于配准准确
+
+2. **陷入错误局部最优的原因**
+   - mcd=50 太大：允许更远的对应点匹配，接受错误匹配
+   - 初始估计敏感：从单位矩阵出发，没有好的初始估计
+   - 对称性欺骗：180 度旋转后局部结构仍相似
+
+3. **核心参数**：mcd 和 cr 决定配准成败
+   - mcd 太大：接受错误匹配
+   - mcd 太小：找不到正确对应
+   - cr 偏离 18-20：陷入局部最优
+
+**参数对耗时和分数的影响**：
+
+| 参数 | 影响程度 | 对分数的影响 | 对耗时的影响 |
+|------|---------|-------------|-------------|
+| max_correspondence_distance | ★★★★★ | 决定是否收敛到正确解 | mcd 较小时耗时增加 |
+| correspondence_randomness | ★★★★★ | 决定是否收敛到正确解 | cr 太大或太小都会增加耗时 |
+| ransac_outlier_rejection_threshold | ☆☆☆☆☆ | 无影响 | 无影响 |
+| ransac_iterations | ☆☆☆☆☆ | 无影响 | 无影响 |
+| max_iterations | ☆☆☆☆☆ | 无影响 | 无影响 |
+| transformation_epsilon | ☆☆☆☆☆ | 无影响 | 无影响 |
+| euclidean_fitness_epsilon | ☆☆☆☆☆ | 无影响 | 无影响 |
+| transformation_rotation_epsilon | ☆☆☆☆☆ | 无影响 | 无影响 |
+| use_reciprocal_correspondences | ☆☆☆☆☆ | 无影响 | 无影响 |
+
+**耗时分析**：
+
+| mcd | cr | Time | Trans Error |
+|-----|----|------|-------------|
+| 5 | 18 | 889ms | 17.3m |
+| 17 | 18.5 | 777ms | 0.0002m |
+| 20 | 18 | 461ms | 0.0012m |
+| 50 | 20 | 519ms | 20.1m |
+
+- **追求精度**：mcd=17, cr=18.5，耗时约 777ms
+- **追求速度**：mcd=20, cr=18，耗时约 461ms，精度仍可达标
+
+**最优配置**：
+
+```yaml
+max_correspondence_distance: 17
+correspondence_randomness: 18.5
+max_iterations: 500
+```
+
 ---
 
 ### NDT + GICP
 
-#### 参数配置
+#### 测试概述
 
-```cpp
-// GICP 精细配准
-gicp_fine.setMaximumIterations(200);
-gicp_fine.setTransformationEpsilon(1e-10);
-gicp_fine.setEuclideanFitnessEpsilon(0.0001);
-gicp_fine.setMaxCorrespondenceDistance(1.0);
-gicp_fine.setCorrespondenceRandomness(50);
-gicp_fine.setRANSACOutlierRejectionThreshold(0.05);
-
-// NDT 粗配准
-ndt.setTransformationEpsilon(0.005);
-ndt.setStepSize(1);
-ndt.setResolution(150);
-ndt.setMaximumIterations(300);
-```
-
-#### 输出结果
-
-```terminal
-Method: NDT+GICP
-Target: 21689 points, 140.144 x 192.66 x 23.4657 m
-Source: 21689 points, 192.66 x 140.144 x 23.4657 m
-
---- Actual Transform (target -> src) ---
--4.37114e-08           -1            0           10
-           1 -4.37114e-08            0           10
-           0            0            1           10
-           0            0            0            1
-T: [10, 10, 10]
-R: [90, -0, 0] deg
-[NDT] Has converged: 1, score: 2.89081
-[NDT+GICP] Score: 3.22261e-07, Time: 5148.47 ms
-
---- Estimated Transform (target -> src) ---
- -3.8302e-08           -1  1.11758e-07      10.0001
-           1 -3.86486e-08   1.2368e-05      9.99976
- -1.2368e-05  1.04309e-07            1      10.0002
-          -0           -0           -0            1
-T: [10.0001, 9.99976, 10.0002]
-R: [90, 0.000708632, 6.40331e-06] deg
-Trans error: 0.000328527 m, Rot error: 0 deg
-```
+| 分类 | 参数 | 值 |
+|------|------|-----|
+| GICP | max_correspondence_distance | 1.0 |
+| GICP | correspondence_randomness | 50 |
+| GICP | max_iterations | 200 |
+| NDT | transformation_epsilon | 0.005 |
+| NDT | step_size | 1 |
+| NDT | resolution | 150 |
+| NDT | max_iterations | 300 |
+| 输出 | Score | 3.22e-07 |
+| 输出 | Time | 5148.47 ms |
+| 输出 | Trans Error | 0.0003 m |
+| 输出 | Rot Error | 0 deg |
 
 #### 效果展示
 
@@ -235,6 +205,3 @@ Trans error: 0.000328527 m, Rot error: 0 deg
 
 ---
 
-### ICP
-
-待补充。
