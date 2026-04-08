@@ -195,7 +195,20 @@ max_iterations: 500
 
 ### NDT + GICP
 
-### NDT + GICP
+#### 参数配置
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| ndt.transformation_epsilon | 0.005 | NDT 变换矩阵收敛阈值 |
+| ndt.step_size | 1 | NDT 步长 |
+| ndt.resolution | 150 | NDT 栅格分辨率 |
+| ndt.max_iterations | 300 | NDT 最大迭代次数 |
+| gicp.max_iterations | 200 | GICP 最大迭代次数 |
+| gicp.transformation_epsilon | 1e-10 | GICP 变换矩阵收敛阈值 |
+| gicp.euclidean_fitness_epsilon | 0.0001 | GICP 欧氏距离收敛阈值 |
+| gicp.max_correspondence_distance | 17.0 | GICP 对应点搜索半径上限 |
+| gicp.correspondence_randomness | 50 | GICP 随机对应点数量 |
+| gicp.ransac_outlier_rejection_threshold | 0.05 | GICP RANSAC 离群点阈值 |
 
 #### 测试概述
 
@@ -221,31 +234,10 @@ max_iterations: 500
 | 输出 | Trans Error | 0.0002 m |
 | 输出 | Rot Error | 0 deg |
 
-```terminal
-Method: NDT+GICP
-Target: 21528 points, 140.559 x 189.63 x 23.603 m
-Source: 21528 points, 189.63 x 140.559 x 23.603 m
-
---- Actual Transform (target -> src) ---
--4.37114e-08           -1            0           10
-           1 -4.37114e-08            0           10
-           0            0            1           10
-           0            0            0            1
-T: [10, 10, 10]
-R: [90, -0, 0] deg
-[NDT] Has converged: 1, score: 2.48808
-[NDT+GICP] NDT: 5023.26 ms, GICP: 198.718 ms, Total: 5225.32 ms, Score: 4.42669e-07
-
---- Estimated Transform (target -> src) ---
--7.61362e-07           -1  6.85447e-07      9.99997
-           1 -7.59954e-07    8.028e-06      9.99987
-  -8.028e-06  6.85459e-07            1      10.0001
-          -0           -0           -0            1
-T: [9.99997, 9.99987, 10.0001]
-R: [90, 0.00045997, 3.92736e-05] deg
-Trans error: 0.000196617 m, Rot error: 0 deg
-```
-
-图例：绿色=Target cloud，白色=Source cloud (before)，黄色=NDT 粗配准结果，蓝色=GICP 精配准结果
+#### 效果展示
 
 ![NDT+GICP 匹配效果展示](/posts/slam/NDT+GICP.png)
+
+#### 总结分析
+
+NDT的耗时过长，并不适合进行slam的回环配准，可用于初始化配准，因为GICP需要一个比较好的初始位姿，但是按纯GICP配准中，似乎初始位姿不好也能实现配准？
