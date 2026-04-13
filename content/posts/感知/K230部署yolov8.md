@@ -2,7 +2,7 @@
 title = 'K230 部署 YOLOv8'
 description = "在 K230 开发板上部署 YOLOv8 目标检测模型"
 date = '2026-04-13'
-draft = true
+draft = false
 tags = ["嵌入式", "python", "视觉", "学习笔记"]
 categories = ["感知"]
 toc = true
@@ -41,7 +41,7 @@ from ultralytics import YOLO
 
 if __name__ == "__main__":
     # 1. 加载训练好的 YOLO 模型
-    model = YOLO(r"D:\CUB_200_2011\bird_5\runs\detect\runs\train\bird_train\weights\best.pt")
+    model = YOLO(r"..\best.pt")
 
     # 2. 调用 YOLO 模型实例的 export 方法
     # 注意：这里不需要重新赋值 model，export 方法会直接生成 ONNX 文件
