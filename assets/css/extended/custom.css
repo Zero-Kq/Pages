@@ -323,8 +323,28 @@
 }
 
 /* =====================
-   响应式适配
+   头部导航菜单
    ===================== */
+#menu a {
+    color: var(--primary);
+}
+
+#menu a:hover {
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+#menu .active {
+    color: var(--primary);
+}
+
+/* =====================
+   页面标题
+   ===================== */
+.page-header h1 {
+    color: var(--primary) !important;
+}
+
 @media (max-width: 1200px) {
     .three-column-layout {
         grid-template-columns: 1fr;

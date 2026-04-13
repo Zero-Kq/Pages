@@ -31,17 +31,12 @@ hugo --buildDrafts
 ```
 
 ### GitHub Actions 部署
-
-站点会在推送到 main 分支时自动部署。手动触发：
-1. 前往 GitHub 的 Actions 页面
-2. 选择 "Deploy Hugo PaperMod Site to Pages"
-3. 点击 "Run workflow"（可选择指定 Hugo 版本）
-
+站点会在推送到 main 分支时自动部署。
 默认使用 Hugo 版本 `0.146.0`。
 
 ### 生成完善文档
 
-生成和完善文档时按照demo.md要求进行
+生成和完善文档时按照`demo.md`要求进行，在修改文档时，不能篡改已有的文字和代码内容，只对格式和布局进行优化
 
 ## 架构
 
