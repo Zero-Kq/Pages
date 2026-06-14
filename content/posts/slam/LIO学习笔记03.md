@@ -1,5 +1,5 @@
 +++
-title = 'ZLIO 学习记录 — IMU 处理'
+title = 'LIO学习笔记03'
 description = "ZLIO 中 IMU 处理的核心流程：初始化、前向传播和后向传播去畸变"
 date = '2026-06-14'
 draft = false
