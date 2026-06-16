@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公式修复预览</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.8;
+      color: #333;
+    }
+    h1 { color: #2563eb; }
+    h2 { color: #4b5563; margin-top: 30px; }
+    .formula-box {
+      background: #f0fdf4;
+      border: 2px solid #22c55e;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    code { background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>已修复的公式预览</h1>
+
+  <h2>1. SO3 指数映射 (Rodrigues 公式)</h2>
+  <div class="formula-box">
+    <p><code>\exp([\theta n]_{\times}) = I + \sin\theta \cdot [n]_{\times} + (1 - \cos\theta) \cdot [n]_{\times}^2</code></p>
+    <p>$$\exp([\theta n]_{\times}) = I + \sin\theta \cdot [n]_{\times} + (1 - \cos\theta) \cdot [n]_{\times}^2$$</p>
+  </div>
+
+  <h2>2. SO3 对数映射</h2>
+  <div class="formula-box">
+    <p><code>[\theta n]_{\times} = \frac{\theta}{2\sin\theta}(R - R^T)</code></p>
+    <p>$$[\theta n]_{\times} = \frac{\theta}{2\sin\theta}(R - R^T)$$</p>
+  </div>
+
+  <h2>3. 右雅可比</h2>
+  <div class="formula-box">
+    <p><code>J_r(\theta n) = I + \frac{1 - \cos\theta}{\theta^2} [n]_{\times} + \frac{\theta - \sin\theta}{\theta^3} [n]_{\times}^2</code></p>
+    <p>$$J_r(\theta n) = I + \frac{1 - \cos\theta}{\theta^2} [n]_{\times} + \frac{\theta - \sin\theta}{\theta^3} [n]_{\times}^2$$</p>
+  </div>
+
+  <h2>4. 其他修复的公式</h2>
+  <div class="formula-box">
+    <p>旋转运动学：</p>
+    <p>$$\dot{R} = R \cdot [\omega_m - b_g]_{\times}$$</p>
+  </div>
+
+  <div class="formula-box">
+    <p>反对称矩阵定义：</p>
+    <p>$$[v]_{\times} = \begin{bmatrix} 0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 0 \end{bmatrix}$$</p>
+  </div>
+
+  <div class="formula-box">
+    <p>中值积分旋转更新：</p>
+    <p>$$R_{k+1} = R_k \cdot \exp([\bar{\omega} - b_g]_{\times} \cdot \Delta t)$$</p>
+  </div>
+
+  <h2>修复规则</h2>
+  <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+    <tr style="background: #f3f4f6;">
+      <th>错误写法</th>
+      <th>正确写法</th>
+    </tr>
+    <tr>
+      <td><code>[n]_\times</code></td>
+      <td><code>[n]_{\times}</code></td>
+    </tr>
+    <tr>
+      <td><code>[n]_\times^2</code></td>
+      <td><code>[n]_{\times}^2</code></td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -10,6 +10,22 @@ theme = 'PaperMod'
 [outputs]
   home = ["HTML", "JSON"]
 
+# Goldmark 配置 - 启用数学公式 passthrough
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      passthrough = true
+      [markup.goldmark.extensions.passthrough]
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [
+            ["$$", "$$"],
+            ["\\[", "\\]"]
+          ]
+          inline = [
+            ["$", "$"],
+            ["\\(", "\\)"]
+          ]
+
 # PaperMod 主题基础配置（可选，优化体验）
 [params]
     author = 'Zero-Kq'                       # 自定义：你的名字/昵称

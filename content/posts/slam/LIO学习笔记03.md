@@ -165,13 +165,13 @@ $$\dot{v} = R \cdot (a_m - b_a) + g$$
 
 **运动模型**（连续时间）：
 
-$$\dot{R} = R \cdot [\omega_m - b_g]_\times$$
+$$\dot{R} = R \cdot [\omega_m - b_g]_{\times}$$
 
 $$\dot{v} = R \cdot (a_m - b_a) + g$$
 
 $$\dot{p} = v$$
 
-其中 $[\cdot]_\times$ 表示反对称矩阵（叉积的矩阵形式）。
+其中 $[\cdot]_{\times}$ 表示反对称矩阵（叉积的矩阵形式）。
 
 **离散化**（中值积分）：
 
@@ -183,7 +183,7 @@ $$\bar{a} = \frac{1}{2}(a_k + a_{k+1})$$
 
 状态更新：
 
-$$R_{k+1} = R_k \cdot \exp([\bar{\omega} - b_g]_\times \cdot \Delta t)$$
+$$R_{k+1} = R_k \cdot \exp([\bar{\omega} - b_g]_{\times} \cdot \Delta t)$$
 
 $$v_{k+1} = v_k + (R_k \cdot (\bar{a} - b_a) + g) \cdot \Delta t$$
 
@@ -373,7 +373,7 @@ $$P_i^{C} = R_C^T \cdot (P_i^{G} - p_C) = R_C^T \cdot (R_i \cdot P_i^{L} + p_i -
 
 **旋转插值**：在 $t_i$ 时刻的旋转通过角速度插值得到：
 
-$$R_i = R_{head} \cdot \exp([\omega \cdot (t_i - t_{head})]_\times)$$
+$$R_i = R_{head} \cdot \exp([\omega \cdot (t_i - t_{head})]_{\times})$$
 
 其中 $R_{head}$ 是该 IMU 段起始时刻的旋转，$\omega$ 是该段的平均角速度。
 
@@ -475,9 +475,9 @@ IMU 处理依赖的核心数学工具定义在 [math_utils.h](src/zlio/include/c
 
 向量 $v = [v_1, v_2, v_3]^T$ 的反对称矩阵：
 
-$$[v]_\times = \begin{bmatrix} 0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 0 \end{bmatrix}$$
+$$[v]_{\times} = \begin{bmatrix} 0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 0 \end{bmatrix}$$
 
-作用：将叉积转化为矩阵乘法 $a \times b = [a]_\times \cdot b$
+作用：将叉积转化为矩阵乘法 $a \times b = [a]_{\times} \cdot b$
 
 ### SO3 指数映射 (Rodrigues 公式)
 
@@ -502,13 +502,13 @@ static inline Eigen::Matrix3d so3Exp(const Eigen::Vector3d &_v) {
 
 $$\theta = \arccos\left(\frac{tr(R) - 1}{2}\right)$$
 
-$$[\theta n]_\times = \frac{\theta}{2\sin\theta}(R - R^T)$$
+$$[\theta n]_{\times} = \frac{\theta}{2\sin\theta}(R - R^T)$$
 
 ### 右雅可比 A_T
 
 用于 IESKF 协方差传播中的误差状态转移：
 
-$$J_r(\theta n) = I + \frac{1 - \cos\theta}{\theta^2} [n]_\times + \frac{\theta - \sin\theta}{\theta^3} [n]_\times^2$$
+$$J_r(\theta n) = I + \frac{1 - \cos\theta}{\theta^2} [n]_{\times} + \frac{\theta - \sin\theta}{\theta^3} [n]_{\times}^2$$
 
 ---
 
