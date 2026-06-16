@@ -14,8 +14,8 @@ theme = 'PaperMod'
 [markup]
   [markup.goldmark]
     [markup.goldmark.extensions]
-      passthrough = true
       [markup.goldmark.extensions.passthrough]
+        enable = true
         [markup.goldmark.extensions.passthrough.delimiters]
           block = [
             ["$$", "$$"],
