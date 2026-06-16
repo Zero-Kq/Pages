@@ -483,7 +483,7 @@ $$[v]_\times = \begin{bmatrix} 0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 
 
 将旋转向量 $\theta \cdot n$ 转换为旋转矩阵：
 
-$$\exp([\theta n]_\times) = I + \sin\theta \cdot [n]_\times + (1 - \cos\theta) \cdot [n]_\times^2$$
+$$\exp([\theta n]_{\times}) = I + \sin\theta \cdot [n]_{\times} + (1 - \cos\theta) \cdot [n]_{\times}^2$$
 
 ```cpp
 static inline Eigen::Matrix3d so3Exp(const Eigen::Vector3d &_v) {
