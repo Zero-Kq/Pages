@@ -10,20 +10,6 @@ theme = 'PaperMod'
 [outputs]
   home = ["HTML", "JSON"]
 
-# Goldmark 配置 - 禁用数学公式转义
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.extensions]
-      [markup.goldmark.extensions.passthrough]
-        enable = true
-        [markup.goldmark.extensions.passthrough.delimiters]
-          [markup.goldmark.extensions.passthrough.delimiters.inline]
-            - ['$', '$']
-            - ['\(', '\)']
-          [markup.goldmark.extensions.passthrough.delimiters.block]
-            - ['$$', '$$']
-            - ['\[', '\]']
-
 # PaperMod 主题基础配置（可选，优化体验）
 [params]
     author = 'Zero-Kq'                       # 自定义：你的名字/昵称
