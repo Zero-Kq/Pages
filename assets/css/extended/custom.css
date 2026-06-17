@@ -1,17 +1,73 @@
 /* =====================
+   主题色彩变量覆盖 (Light Mode)
+   ===================== */
+:root,
+:root[data-theme="light"] {
+    --theme: rgba(252, 249, 245, 1);
+    /* 偏暖的米白背景 */
+    --entry: #ffffff;
+    /* 纯白卡片 */
+    --primary: #4a4a4a;
+    /* 柔和的深灰/褐灰文字 */
+    --secondary: #888888;
+    /* 次要文字颜色 */
+    --tertiary: #FAF8F2;
+    /* 浅底色（标签云、背景） */
+    --border: #F0EAE1;
+    /* 极浅暖色边框 */
+    --highlight: #d6a848;
+    /* 金色/暖黄点缀色 */
+
+    --tag-bg: #fdf3e1;
+    --tag-border: #f8e5c8;
+    --tag-text: #cfa144;
+}
+
+/* =====================
+   顶部导航栏样式
+   ===================== */
+.header {
+    background: var(--entry) !important;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+}
+
+.header:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* 修复 PaperMod 默认将列表页背景设为浅灰色的问题 */
+body.list {
+    background: var(--theme) !important;
+}
+
+:root[data-theme="dark"] {
+    --highlight: #d6a848;
+    --tag-bg: #332d21;
+    --tag-border: #4d4431;
+    --tag-text: #e6b85c;
+}
+
+/* =====================
    三栏布局容器
    ===================== */
 .three-column-layout {
     display: grid;
-    grid-template-columns: 200px 720px 220px;
+    grid-template-columns: 200px 840px 220px;
     gap: var(--gap);
     width: 100%;
-    max-width: 1200px;
+    max-width: 1350px;
     margin: 0 auto;
     padding: var(--gap);
     align-items: start;
     box-sizing: border-box;
     justify-content: center;
+}
+
+/* 当右侧边栏没有内容时，改为两栏并居中 */
+.three-column-layout:not(:has(.sidebar-right .sidebar-box)) {
+    grid-template-columns: 200px 840px;
 }
 
 /* 三栏布局占满整个 .main 容器宽度 */
@@ -38,10 +94,32 @@
     top: calc(var(--header-height) + var(--gap));
     max-height: calc(100vh - var(--header-height) - var(--gap) * 2);
     overflow-y: auto;
-    padding: var(--gap);
+    /* 防止 overflow 裁剪阴影 */
+    padding: 16px;
+    margin: -16px;
+}
+
+/* 当右侧边栏为空时完全隐藏，避免产生多余的 grid gap */
+.sidebar-right:not(:has(.sidebar-box)) {
+    display: none;
+}
+
+.sidebar-box {
     background: var(--entry);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    padding: var(--gap);
+    margin-bottom: var(--gap);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-box:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-box:last-child {
+    margin-bottom: 0;
 }
 
 /* 滚动条样式 */
@@ -147,8 +225,8 @@
    右侧边栏样式
    ===================== */
 .sidebar-block {
-    margin-bottom: var(--gap);
-    padding-bottom: var(--gap);
+    margin-bottom: 16px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
 }
 
@@ -165,6 +243,28 @@
     color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-icon {
+    color: var(--highlight);
+}
+
+.view-all-link {
+    display: block;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--highlight);
+    text-decoration: none;
+    font-weight: 500;
+    text-align: left;
+    transition: opacity 0.2s;
+}
+
+.view-all-link:hover {
+    opacity: 0.8;
 }
 
 /* TOC 目录样式 */
@@ -178,22 +278,57 @@
     margin: 0;
 }
 
+/* 为嵌套的 ul 添加缩进 */
+.toc-nav ul ul {
+    padding-left: 16px;
+    margin-top: 4px;
+}
+
 .toc-nav li {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.4;
 }
 
 .toc-nav a {
     color: var(--secondary);
     text-decoration: none;
     transition: color 0.15s ease;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .toc-nav a:hover {
     color: var(--primary);
 }
 
-.toc-nav > ul > li > a {
-    font-weight: 500;
+.toc-nav a.active {
+    color: var(--theme) !important;
+    background: var(--primary);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: -6px;
+    font-weight: 600 !important;
+}
+
+/* 一级目录（即 h2）特殊样式，需要穿透 #TableOfContents */
+.toc-nav nav>ul>li>a {
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 8px;
+}
+
+/* 去除第一个顶级元素的上边距 */
+.toc-nav nav>ul>li:first-child>a {
+    margin-top: 0;
+}
+
+/* 二级目录（即 h3 及以下）样式 */
+.toc-nav nav>ul>li>ul a {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--secondary);
 }
 
 /* 最近更新列表 */
@@ -237,8 +372,9 @@
     gap: 4px;
     padding: 4px 10px;
     font-size: 12px;
-    background: var(--tertiary);
-    color: var(--secondary);
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border: 1px solid var(--tag-border);
     border-radius: 6px;
     text-decoration: none;
     transition: all 0.15s ease;
@@ -263,10 +399,9 @@
    列表页容器样式
    ===================== */
 .post-list-container {
-    background: var(--entry);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--gap);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
 }
 
 .page-header {
@@ -281,13 +416,69 @@
 }
 
 .post-entry {
-    padding: var(--gap) 0;
+    padding: var(--gap);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
     border-bottom: 1px solid var(--border);
+    transition: background 0.2s ease;
+    
+    /* 清除 PaperMod 默认独立卡片样式 */
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.posts-group {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+}
+
+.posts-group:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.post-entry:hover {
+    background: var(--tertiary);
 }
 
 .post-entry:last-child {
     border-bottom: none;
 }
+
+.post-entry-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.post-entry .entry-cover {
+    margin: 0;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.post-entry .entry-cover img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    transition: transform 0.3s ease;
+}
+
+.post-entry:hover .entry-cover img {
+    transform: scale(1.02);
+}
+
 
 .post-entry h2 {
     font-size: 18px;
@@ -325,6 +516,14 @@
 /* =====================
    头部导航菜单
    ===================== */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--theme);
+    border-bottom: 1px solid var(--border);
+}
+
 #menu a {
     color: var(--primary);
 }
@@ -373,4 +572,119 @@
     .three-column-layout {
         max-width: 1500px;
     }
+}
+
+/* =====================
+   主页欢迎栏定制 (Welcome Block)
+   ===================== */
+.custom-home-info {
+    padding: 0 !important;
+    overflow: hidden;
+    background: var(--entry);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-home-info:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.home-info-top {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: var(--gap);
+    flex: 1;
+}
+
+.home-info-content {
+    flex: 1;
+    z-index: 2;
+    position: relative;
+}
+
+.home-info-bg {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 60%;
+    z-index: 1;
+    mask-image: linear-gradient(to right, transparent, black 40%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 40%);
+}
+
+.home-info-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+}
+
+[data-theme="dark"] .home-info-bg img {
+    opacity: 0.4;
+    filter: brightness(0.8);
+}
+
+.home-info-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px var(--gap);
+    background: var(--tag-bg);
+    margin: 0 var(--gap) var(--gap) var(--gap);
+    border-radius: var(--radius);
+    z-index: 2;
+    position: relative;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-icon {
+    color: var(--highlight);
+}
+
+.stat-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--secondary);
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* =====================
+   搜索框样式优化 (Search Box)
+   ===================== */
+#searchbox input {
+    padding: 12px 16px !important;
+    background-color: var(--theme) !important;
+    border: 1px solid #a9a9a9 !important; /* 加深灰色边框以便明显区分 */
+    font-size: 16px !important;
+    border-radius: var(--radius) !important;
+    transition: all 0.2s ease !important;
+    color: var(--primary) !important;
+    font-weight: normal !important;
+    box-shadow: none !important;
+}
+
+#searchbox input:focus {
+    border-color: var(--highlight) !important;
+    box-shadow: 0 0 0 2px rgba(214, 168, 72, 0.2) !important;
 }

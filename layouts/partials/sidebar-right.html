@@ -1,33 +1,67 @@
 {{- /* 右侧浮动侧边栏 */ -}}
+{{- if .IsPage }}
 <aside class="sidebar-right">
-    {{- if and (.Params.ShowToc) (.TableOfContents) }}
-    <div class="sidebar-block toc-block">
-        <h3 class="sidebar-block-title">文章目录</h3>
-        <nav class="toc-nav">
-            {{ .TableOfContents }}
-        </nav>
+    {{- $hasToc := and (.Param "ShowToc") (findRE "(?i)<li" .TableOfContents) }}
+    {{- if $hasToc }}
+    <div class="sidebar-box">
+        <div class="sidebar-block toc-block">
+            <nav class="toc-nav">
+                {{ .TableOfContents }}
+            </nav>
+        </div>
     </div>
     {{- end }}
 
-    <div class="sidebar-block recent-posts-block">
-        <h3 class="sidebar-block-title">最近更新</h3>
-        <ul class="recent-posts-list">
-            {{- range first 5 (where site.RegularPages "Type" "in" site.Params.mainSections) }}
-            <li class="recent-post-item">
-                <a href="{{ .Permalink }}" class="recent-post-link">{{ .Title }}</a>
-            </li>
-            {{- end }}
-        </ul>
-    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const headers = document.querySelectorAll('.post-content h1[id], .post-content h2[id], .post-content h3[id], .post-content h4[id], .post-content h5[id], .post-content h6[id]');
+            const tocLinks = document.querySelectorAll('.toc-nav a');
+            if (headers.length === 0 || tocLinks.length === 0) return;
 
-    <div class="sidebar-block tags-block">
-        <h3 class="sidebar-block-title">热门标签</h3>
-        <div class="sidebar-tags">
-            {{- range first 20 site.Taxonomies.tags.ByCount }}
-            <a href="{{ .Page.RelPermalink }}" class="sidebar-tag">
-                {{ .Page.Title }}<span class="tag-count">{{ .Count }}</span>
-            </a>
-            {{- end }}
-        </div>
-    </div>
+            let activeLink = null;
+
+            const onScroll = () => {
+                const scrollPosition = window.scrollY + 120;
+                let currentActiveId = '';
+
+                for (let i = 0; i < headers.length; i++) {
+                    if (headers[i].offsetTop <= scrollPosition) {
+                        currentActiveId = headers[i].id;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (!currentActiveId && headers.length > 0) {
+                    currentActiveId = headers[0].id;
+                }
+
+                if (currentActiveId) {
+                    tocLinks.forEach(link => {
+                        if (link.getAttribute('href') === '#' + currentActiveId) {
+                            if (activeLink !== link) {
+                                if (activeLink) activeLink.classList.remove('active');
+                                link.classList.add('active');
+                                activeLink = link;
+
+                                const tocBlock = document.querySelector('.sidebar-right');
+                                if (tocBlock) {
+                                    const linkOffset = link.offsetTop;
+                                    if (linkOffset > tocBlock.scrollTop + tocBlock.clientHeight - 40 || linkOffset < tocBlock.scrollTop + 40) {
+                                        tocBlock.scrollTo({ top: linkOffset - 60, behavior: 'smooth' });
+                                    }
+                                }
+                            }
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            };
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        });
+    </script>
 </aside>
+{{- end }}

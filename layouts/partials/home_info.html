@@ -1,0 +1,63 @@
+{{- with site.Params.homeInfoParams }}
+<article class="first-entry home-info custom-home-info">
+    <div class="home-info-top">
+        <div class="home-info-content">
+            <header class="entry-header">
+                <h1>{{ .Title | markdownify }}</h1>
+            </header>
+            <div class="entry-content">
+                {{ .Content | markdownify }}
+            </div>
+            <footer class="entry-footer">
+                {{ partial "social_icons.html" (dict "align" site.Params.homeInfoParams.AlignSocialIconsTo) }}
+            </footer>
+        </div>
+        <div class="home-info-bg">
+            <img src="{{ "images/welcome_bg.png" | absURL }}" alt="Welcome Background" loading="lazy">
+        </div>
+    </div>
+    <div class="home-info-stats">
+        <div class="stat-item">
+            <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">文章</span>
+                <span class="stat-value">{{ len (where site.RegularPages "Type" "in" site.Params.mainSections) }}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">分类</span>
+                <span class="stat-value">{{ len site.Taxonomies.categories }}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">标签</span>
+                <span class="stat-value">{{ len site.Taxonomies.tags }}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div class="stat-text">
+                <span class="stat-label">总字数</span>
+                {{ $scratch := newScratch }}
+                {{ $scratch.Add "wordcount" 0 }}
+                {{ range where site.RegularPages "Type" "in" site.Params.mainSections }}
+                    {{ $scratch.Add "wordcount" .WordCount }}
+                {{ end }}
+                <span class="stat-value">{{ $scratch.Get "wordcount" }}</span>
+            </div>
+        </div>
+    </div>
+</article>
+{{- end -}}
