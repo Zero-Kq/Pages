@@ -5,7 +5,6 @@ date = '2026-06-14'
 draft = false
 tags = ["slam", "学习笔记"]
 categories = ["SLAM"]
-weight = 1
 slug = ""
 aliases = []
 series = []
@@ -196,28 +195,18 @@ VOXEL_LOC loc(
 
 ### addScan 整体流程
 
-```
-输入: 当前帧点云 _curr_scan (雷达系) + 位姿 (_att_q, _pos_t)
+```mermaid
+flowchart TD
+    A("输入: 当前帧点云 _curr_scan (雷达系) + 位姿 (_att_q, _pos_t)")
+    
+    A --> B["**步骤 1: 并行预计算世界坐标和体素索引 (不涉及锁)**<br><br>for each point p in _curr_scan:<br>&nbsp;&nbsp;p_world = R * p + t<br>&nbsp;&nbsp;voxel_loc = floor(p_world / voxel_size)"]
+    
+    B --> C["**步骤 2: 串行更新地图 (带锁)**<br><br>for each (p_world, voxel_loc):<br>&nbsp;&nbsp;voxel_map_local_[voxel_loc].add(p_world)<br>&nbsp;&nbsp;voxel_map_global_[voxel_loc].add(p_world)"]
+    
+    C --> D["**步骤 3: 地图维护 (每 50 帧执行一次)**<br><br>遍历 voxel_map_local_，剔除距离当前位置<br>超过 map_side 的体素"]
 
-┌─────────────────────────────────────────────────────────────┐
-│ 步骤 1: 并行预计算世界坐标和体素索引 (不涉及锁)              │
-│                                                              │
-│   for each point p in _curr_scan:                            │
-│     p_world = R * p + t                                      │
-│     voxel_loc = floor(p_world / voxel_size)                  │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│ 步骤 2: 串行更新地图 (带锁)                                  │
-│                                                              │
-│   for each (p_world, voxel_loc):                             │
-│     voxel_map_local_[voxel_loc].add(p_world)                 │
-│     voxel_map_global_[voxel_loc].add(p_world)                │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│ 步骤 3: 地图维护 (每 50 帧执行一次)                           │
-│                                                              │
-│   遍历 voxel_map_local_，剔除距离当前位置超过 map_side 的体素  │
-└─────────────────────────────────────────────────────────────┘
+    style B text-align:left
+    style C text-align:left
 ```
 
 ### 代码实现

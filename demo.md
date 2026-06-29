@@ -22,7 +22,7 @@ aliases = []         # 链接别名
 series = []          # 系列文章
 externalLink = ""    # 外部跳转链接
 toc = true           # 自动生成目录
-math = false         # 启用数学公式
+math = false         # 启用数学公式（带公式默认为 true，否则默认为 false）
 +++
 ```
 
@@ -37,7 +37,7 @@ math = false         # 启用数学公式
 
 - `description`（建议填写，不超过 150 字）
 - `toc`（默认 true）
-- `math`（默认 false）
+- `math`（带公式默认为 true，否则默认为 false）
 - `weight`、`slug`、`series`、`aliases`（按需使用）
 
 ---
