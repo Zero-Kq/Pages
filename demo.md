@@ -156,9 +156,10 @@ math = false         # 启用数学公式
 
 ## 9. 文件命名规范
 
+- 文件名与文章 `title` 保持一致（转为小写 + 中横线格式）
+  - 示例：title 为"Linux 系统配置指南" → 文件名 `linux-system-guide.md`或者`Linux 系统配置指南.md`
 - 文件名：小写字母 + 数字 + 中横线
   - 示例：`slam-intro.md`、`linux-cmake.md`
-- 禁止使用：中文、空格、大写、下划线
 - 按分类归档，不全部放在同一目录
 
 ---
