@@ -1,0 +1,25 @@
+{
+  "name": "pages",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zero-Kq/Pages.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zero-Kq/Pages/issues"
+  },
+  "homepage": "https://github.com/Zero-Kq/Pages#readme",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "glob": "^13.0.6",
+    "shiki": "^4.3.0"
+  }
+}

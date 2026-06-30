@@ -73,6 +73,17 @@ jobs:
             --buildDrafts --gc \
             --baseURL ${{ steps.pages.outputs.base_url }}
 
+      # 使用 Node.js 运行 Shiki 高亮脚本
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Run Shiki Syntax Highlighter
+        run: |
+          npm ci
+          node scripts/shiki-highlight.mjs
+
       # 上传构建产物（public 目录）
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3

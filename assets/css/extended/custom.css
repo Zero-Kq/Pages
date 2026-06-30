@@ -699,3 +699,15 @@ body.list {
 .highlight pre code, .highlight .lnt, .highlight .ln, code {
     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Menlo', 'Courier New', monospace !important;
 }
+
+/* Shiki compatibility overrides */
+.highlight .chroma, .highlight table {
+    background-color: #1E1E1E !important;
+}
+.highlight .lntd:first-child pre {
+    background-color: #1E1E1E !important;
+    color: #858585 !important;
+}
+.highlight pre code {
+    line-height: 1.5 !important;
+}
