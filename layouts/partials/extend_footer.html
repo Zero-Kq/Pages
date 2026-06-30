@@ -24,3 +24,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+{{ if site.IsServer }}
+<!-- Run Shiki directly in browser during local development -->
+<script type="module">
+  import { createHighlighter } from 'https://esm.sh/shiki@1.0.0';
+  
+  async function highlight() {
+    const highlighter = await createHighlighter({
+        themes: ['dark-plus'],
+        langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell']
+    });
+    
+    document.querySelectorAll('.highlight code[data-lang]').forEach(el => {
+      let lang = el.getAttribute('data-lang');
+      if (lang === 'sh') lang = 'shell';
+      let text = el.textContent;
+      if (text.endsWith('\n')) text = text.slice(0, -1);
+      
+      const html = highlighter.codeToHtml(text, { lang, theme: 'dark-plus' });
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      const innerCode = temp.querySelector('code');
+      if (innerCode) {
+          el.innerHTML = innerCode.innerHTML;
+      }
+    });
+  }
+  highlight().catch(console.error);
+</script>
+{{ end }}
