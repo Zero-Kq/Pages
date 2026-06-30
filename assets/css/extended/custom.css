@@ -711,3 +711,11 @@ body.list {
 .highlight pre code {
     line-height: 1.5 !important;
 }
+.highlight pre code .line:empty::before,
+.highlight pre code .line:has(> :empty:only-child)::before {
+    content: ' ';
+    white-space: pre;
+}
+.highlight pre code .line {
+    min-height: 1.5em;
+}
