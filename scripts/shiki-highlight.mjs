@@ -12,7 +12,7 @@ async function processHtmlFiles() {
     console.log('Initializing Shiki...');
     const highlighter = await createHighlighter({
         themes: ['dark-plus'],
-        langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell']
+        langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell', 'plaintext', 'text']
     });
 
     const publicDir = path.resolve(__dirname, '../public');
@@ -32,6 +32,9 @@ async function processHtmlFiles() {
             codeBlocks.each((_, el) => {
                 let lang = $(el).attr('data-lang');
                 if (lang === 'sh') lang = 'shell';
+                if (!highlighter.getLoadedLanguages().includes(lang)) {
+                    lang = 'plaintext';
+                }
                 
                 let codeText = $(el).text();
                 // Strip the trailing newline that Hugo adds, to prevent an extra empty line

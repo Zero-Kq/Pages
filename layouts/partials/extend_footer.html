@@ -33,12 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
   async function highlight() {
     const highlighter = await createHighlighter({
         themes: ['dark-plus'],
-        langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell']
+        langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell', 'plaintext', 'text']
     });
     
     document.querySelectorAll('.highlight code[data-lang]').forEach(el => {
       let lang = el.getAttribute('data-lang');
       if (lang === 'sh') lang = 'shell';
+      if (!highlighter.getLoadedLanguages().includes(lang)) {
+          lang = 'plaintext';
+      }
       let text = el.textContent;
       if (text.endsWith('\n')) text = text.slice(0, -1);
       
