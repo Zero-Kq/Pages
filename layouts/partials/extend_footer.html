@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-{{ if site.IsServer }}
+{{ if hugo.IsServer }}
 <!-- Run Shiki directly in browser during local development -->
 <script type="module">
   import { createHighlighter } from 'https://esm.sh/shiki@1.0.0';
