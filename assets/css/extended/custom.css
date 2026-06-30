@@ -688,3 +688,14 @@ body.list {
     border-color: var(--highlight) !important;
     box-shadow: 0 0 0 2px rgba(214, 168, 72, 0.2) !important;
 }
+/* Center Mermaid Diagrams */
+.mermaid {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem auto;
+}
+
+/* Code block fonts */
+.highlight pre code, .highlight .lnt, .highlight .ln, code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Menlo', 'Courier New', monospace !important;
+}

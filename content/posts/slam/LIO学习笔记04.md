@@ -292,22 +292,21 @@ void VoxelMapManager::addScan(PCLPointCloudPtr _curr_scan,
 - 计算只需 `max(abs(dx), abs(dy), abs(dz))`，比 `sqrt(dx²+dy²+dz²)` 更快
 - 体素本身就是立方体，用立方体窗口更自然
 
-```
-维护范围示意 (2D 视角):
-
-          map_side = 50m
-         ◄─────────────►
-    ┌────────────────────────────┐
-    │                            │
-    │    ┌──────────────────┐    │
-    │    │                  │    │
-    │    │    ● 当前位置     │    │
-    │    │                  │    │
-    │    └──────────────────┘    │
-    │     保留范围 (100m×100m)    │
-    │                            │
-    └────────────────────────────┘
-           超出范围的体素被删除
+```mermaid
+flowchart TD
+    subgraph OutOfBounds ["超出范围的区域 (将被删除)"]
+        direction TB
+        subgraph InBounds ["保留范围: 100m × 100m (局部地图)"]
+            direction TB
+            Center(("● 当前位置"))
+            Note["向四周延伸 map_side (50m)"]
+            Center -.- Note
+        end
+    end
+    
+    style OutOfBounds fill:#fff0f0,stroke:#ff6b6b,stroke-width:2px,stroke-dasharray: 5 5
+    style InBounds fill:#f0fff0,stroke:#51cf66,stroke-width:2px
+    style Center fill:#fff,stroke:#333,stroke-width:2px
 ```
 
 **设计权衡**：

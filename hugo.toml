@@ -12,6 +12,13 @@ theme = 'PaperMod'
 
 # Goldmark 配置 - 启用数学公式 passthrough
 [markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
+    style = "gruvbox"
   [markup.goldmark]
     [markup.goldmark.extensions]
       [markup.goldmark.extensions.passthrough]
@@ -94,3 +101,4 @@ theme = 'PaperMod'
     name = "关于"
     url = "/about/"
     weight = 5
+

@@ -3,5 +3,6 @@
   {{- .Inner -}}
 </div>
 {{- else }}
-<pre><code class="language-{{ .Type }}">{{ .Inner }}</code></pre>
+{{- $result := transform.Highlight .Inner .Type -}}
+{{- $result -}}
 {{- end }}
