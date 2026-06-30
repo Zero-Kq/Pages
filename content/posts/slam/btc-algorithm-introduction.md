@@ -236,7 +236,7 @@ void BTCOctoTree::init_plane()
    - 平面半径 = `√λ_max`
 
 4. **计算平面方程**：
-   ```cpp
+   ```text
    d = -(n · center)
    平面: n·p + d = 0
    ```
@@ -348,7 +348,7 @@ void STDescManager::merge_plane(std::vector<BTCPlane *> &origin_list,
 - 未合并的平面（`id_ = 0`）也保留
 
 **合并公式**：
-```cpp
+```text
 新中心 = (n₁ * μ₁ + n₂ * μ₂) / (n₁ + n₂)
 新协方差 = (ΣP_PT₁ + ΣP_PT₂) / (n₁ + n₂) - 新中心 * 新中心^T
 ```
@@ -393,7 +393,7 @@ void STDescManager::extract_binary(
 **这是整个算法最核心的函数，详细步骤如下**：
 
 #### Step 1: 构建投影坐标系
-```cpp
+```text
 平面法向量: n = (A, B, C)
 平面中心: c = project_center
 
@@ -411,7 +411,7 @@ y_axis: n × x_axis（叉积）
 4. 计算 2D 坐标 `(px, py)`
 
 #### Step 3: 构建距离图像
-```cpp
+```text
 分辨率: resolution = 0.5m
 图像尺寸: x_axis_len * y_axis_len
 
@@ -421,7 +421,7 @@ y_axis: n × x_axis（叉积）
 ```
 
 #### Step 4: 生成二进制编码
-```cpp
+```text
 高度分层数: cut_num = (dis_max - dis_min) / high_inc
 
 对每个像素:
@@ -431,7 +431,7 @@ y_axis: n × x_axis（叉积）
 ```
 
 **二进制编码示意**：
-```cpp
+```text
 高度层:    [层0] [层1] [层2] [层3] [层4] ...
 占用情况:   1     0     1     1     0    ...
 occupy_array_ = [true, false, true, true, false, ...]
@@ -449,7 +449,7 @@ summary_ = 3
 - 若两侧都有高响应值，说明是线结构，过滤掉
 
 #### Step 7: 恢复 3D 坐标
-```cpp
+```text
 3D位置 = py * x_axis + px * y_axis + project_center
 ```
 
@@ -619,7 +619,7 @@ void STDescManager::triangle_solver(std::pair<STD, STD> &std_pair,
 **算法**（SVD 分解法）：
 
 1. **构建对应点矩阵**：
-   ```cpp
+   ```text
    src = [A-c, B-c, C-c]  （当前帧，去中心化）
    ref = [A'-c', B'-c', C'-c']  （候选帧，去中心化）
    ```
@@ -669,7 +669,7 @@ double STDescManager::plane_geometric_verify(
      - 点到平面距离：`|n_target^T * (p' - p_target)| < dis_threshold`
 
 3. **计算得分**：
-   ```cpp
+   ```text
    score = 匹配点数 / 源点云总点数
    ```
    得分范围 `[0, 1]`，越高越好

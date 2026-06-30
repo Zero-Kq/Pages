@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
 {{ if hugo.IsServer }}
 <!-- Run Shiki directly in browser during local development -->
 <script type="module">
-  import { createHighlighter } from 'https://esm.sh/shiki@1.0.0';
+  import { getHighlighter } from 'https://cdn.jsdelivr.net/npm/shiki@1.0.0/+esm';
   
   async function highlight() {
-    const highlighter = await createHighlighter({
+    const highlighter = await getHighlighter({
         themes: ['dark-plus'],
         langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell', 'plaintext', 'text']
     });

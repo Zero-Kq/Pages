@@ -228,7 +228,7 @@ void Visualize::RenderCar() {
 
 日志打印直接设置参数并调用即可：
 
-```cpp
+```text
 #include <glog/logging.h>    // 头文件
 
 // 初始化日志系统
