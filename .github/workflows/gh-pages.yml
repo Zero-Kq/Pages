@@ -77,7 +77,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
       - name: Run Shiki Syntax Highlighter
         run: |
@@ -90,7 +90,7 @@ jobs:
         with:
           path: ./public
 
-  # 部署到 gh-pages 分支
+  # 直接部署到 GitHub Pages (无需 gh-pages 分支)
   deploy:
     permissions:
       pages: write

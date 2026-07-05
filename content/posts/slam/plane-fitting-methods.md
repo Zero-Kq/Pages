@@ -147,9 +147,7 @@ x_2 & y_2 & z_2 \\
 \vdots & \vdots & \vdots \\
 x_N & y_N & z_N
 \end{bmatrix}}_{\mathbf{A}\,(N\times 3)}
-\mathbf{x}
-=
-\underbrace{\begin{bmatrix} -1 \\ -1 \\ \vdots \\ -1 \end{bmatrix}}_{\mathbf{b}}
+\mathbf{x} = \underbrace{\begin{bmatrix} -1 \\ -1 \\ \vdots \\ -1 \end{bmatrix}}_{\mathbf{b}}
 $$
 
 ### 计算步骤
