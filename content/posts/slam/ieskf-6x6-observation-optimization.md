@@ -1,7 +1,7 @@
 +++
 title = 'IESKF 观测更新：6×6 累加两种推导路径'
 description = "从 18 维 IESKF 点面观测出发，推导并对比基于 6×6 HTVH/HTVr 累加的两种代数等价路径，用于理解信息滤波中的矩阵压缩思想"
-date = '2026-03-11'
+date = '2026-07-10'
 draft = false
 tags = ["slam", "优化", "学习笔记", "C++"]
 categories = ["SLAM"]
