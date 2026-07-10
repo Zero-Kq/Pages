@@ -372,7 +372,7 @@ P = (I - KH) * P_in;
 
 下图记录了约 781 帧运行过程中，基准写法与路径 B 的耗时曲线对比：
 
-![IESKF 路径 B 优化前后耗时对比](/posts/slam/ieskf-timing-comparison.png)
+![IESKF 路径 B 优化前后耗时对比](../ieskf-timing-comparison.png)
 
 从曲线可以观察到：
 
