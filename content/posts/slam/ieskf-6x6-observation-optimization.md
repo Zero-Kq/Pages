@@ -1,6 +1,6 @@
 +++
-title = 'IESKF 观测优化：6×6 累加两种方案'
-description = "对比 IESKF 点面观测中基于 6×6 HTVH/HTVr 累加的方案 A（Cholesky 压成 6 行 H/Z）与方案 B（update 直接消费），分析等价性与实现代价"
+title = 'IESKF 观测更新：6×6 累加两种推导路径'
+description = "从 18 维 IESKF 点面观测出发，推导并对比基于 6×6 HTVH/HTVr 累加的两种代数等价路径，用于理解信息滤波中的矩阵压缩思想"
 date = '2026-03-11'
 draft = false
 tags = ["slam", "优化", "学习笔记", "C++"]
@@ -11,18 +11,18 @@ math = true
 
 ## 介绍
 
-本文对比两种基于 $6 \times 6$ 累加的 IESKF 观测优化方案：
+在 LIO 的 IESKF 点面观测中，每行雅可比只有前 6 列非零，因此 $H^\top H$ 与 $H^\top Z$ 的信息可压缩为 $6 \times 6$ 与 $6 \times 1$ 的汇总量。本文记录并推导由此产生的两种等价计算路径：
 
-| 方案 | 简述 |
+| 路径 | 简述 |
 |------|------|
-| **方案 A** | 累加 HTVH/HTVr → Cholesky 压成 6 行 H/Z → `update()` **不改** |
-| **方案 B** | 累加 HTVH/HTVr → `update()` **直接消费**，不建 H/Z/K |
+| **路径 A** | 累加 HTVH/HTVr → Cholesky 还原为 6 行合成观测 $H_s, Z_s$ → 走标准更新公式 |
+| **路径 B** | 累加 HTVH/HTVr → 在更新阶段直接消费汇总量，不显式构造 $H$、$Z$、$K$ |
 
-两者观测模型相同，均与现版 V 行 H 在代数上等价（方案 B 若保留 ZLIO 的 IE `left+right` 形式）。
+两者观测模型相同，在保留迭代误差（IE）`left + right` 形式时，与逐点构建 $V$ 行 $H$ 的基准写法代数等价。下文以典型 18 维 LIO 状态为例，逐步展开推导。
 
 ## 1. 背景：18 维状态 vs 6 维观测
 
-ZLIO 状态为 18 维：
+考虑 18 维误差状态：
 
 | 下标 | 状态 | LiDAR 点面观测 |
 |------|------|----------------|
@@ -47,7 +47,7 @@ $$
 r_i = n_i^\top (R \, p_{\text{imu},i} + p - c_i)
 $$
 
-## 2. 原版计算（V 行 H，现版基准）
+## 2. 基准写法：逐点构建 $V$ 行 $H$
 
 ### 2.1 观测矩阵
 
@@ -59,12 +59,12 @@ $$
 h_{i,\theta} = -n_i^\top R \, [p_{\text{imu},i}]_\times, \quad h_{i,p} = n_i^\top
 $$
 
-### 2.2 IESKF 更新（现版 `ieskf.cpp`）
+### 2.2 IESKF 迭代更新
 
-噪声 $R = 0.001$（写死在代码中），信息形式：
+设观测噪声方差 $\sigma^2 = 0.001$，信息形式为：
 
 $$
-P_{\text{inv}} = \left(\frac{P_{\text{in}}}{0.001}\right)^{-1}
+P_{\text{inv}} = \left(\frac{P_{\text{in}}}{\sigma^2}\right)^{-1}
 $$
 
 $$
@@ -74,6 +74,8 @@ $$
 $$
 K = M^{-1} H^\top \quad (18 \times V)
 $$
+
+IE 形式的两项更新：
 
 $$
 \text{left} = -K Z
@@ -93,6 +95,8 @@ $$
 
 ### 2.3 可压缩的 6 维汇总量
 
+由于 $H$ 每行只有前 6 列非零，有：
+
 $$
 \text{HTVH} = \sum_i J_i J_i^\top = \text{（} H^\top H \text{ 的左上角 } 6 \times 6 \text{ 块）} \quad (6 \times 6)
 $$
@@ -101,7 +105,7 @@ $$
 \text{HTVr} = \sum_i J_i r_i = \text{（} H^\top Z \text{ 的前 6 维）} \quad (6 \times 1)
 $$
 
-**公共累加代码**（两种方案在 `calculate` / `accumulate` 中相同）：
+**公共累加逻辑**（两种路径在观测构建阶段相同）：
 
 ```cpp
 Eigen::Vector6d J;
@@ -112,34 +116,34 @@ HTVH += J * J.transpose();   // 6×6
 HTVr += J * residual;        // 6×1
 ```
 
-**注意**：累加时 **不要** 额外乘 $w=1000$；权重由 `update()` 里的 `0.001` 体现。
+**注意**：累加阶段只汇总几何信息；噪声权重 $\sigma^2$ 在更新阶段通过 $P_{\text{inv}}$ 体现，不应在累加时重复乘权。
 
-## 3. 方案 A：累加 + Cholesky 压成 6 行 H/Z
+## 3. 路径 A：累加后 Cholesky 还原合成观测
 
 ### 3.1 思路
 
-接口 `calculate(State, Z, H)` **不变**。循环内只累加 HTVH/HTVr，循环结束后用 Cholesky 构造 6 行合成观测，再交给现版 `update()`。
+点云循环内只累加 HTVH/HTVr；循环结束后，用 Cholesky 分解构造 6 行合成观测矩阵，再代入第 2 节的标准更新公式。观测构建与滤波更新在接口上仍可保持分离。
 
 ### 3.2 Cholesky 构造
 
-要求：
+要求合成观测 $H_s, Z_s$ 满足：
 
 $$
-H_{\text{synth}}^\top H_{\text{synth}} \text{ 的 } 6 \times 6 \text{ 块} = \text{HTVH}, \quad H_{\text{synth}}^\top Z_{\text{synth}} \text{ 的前 6 维} = \text{HTVr}
+H_s^\top H_s \text{ 的 } 6 \times 6 \text{ 块} = \text{HTVH}, \quad H_s^\top Z_s \text{ 的前 6 维} = \text{HTVr}
 $$
 
-步骤：
+分解步骤：
 
 $$
 \text{HTVH} = L L^\top
 $$
 
 $$
-H_{\text{synth}} = \begin{bmatrix} L & 0_{6 \times 12} \end{bmatrix} \in \mathbb{R}^{6 \times 18}
+H_s = \begin{bmatrix} L & 0_{6 \times 12} \end{bmatrix} \in \mathbb{R}^{6 \times 18}
 $$
 
 $$
-L^\top Z_{\text{synth}} = \text{HTVr}
+L^\top Z_s = \text{HTVr}
 $$
 
 ```cpp
@@ -147,47 +151,39 @@ Eigen::LLT<Eigen::Matrix6d> llt(HTVH);
 if (llt.info() != Eigen::Success) return false;
 
 Eigen::Matrix6d L = llt.matrixL();
-_H = Eigen::MatrixXd::Zero(6, 18);
-_H.block<6, 6>(0, 0) = L;
-_Z = L.transpose().triangularView<Eigen::Upper>().solve(HTVr);
+H_synth = Eigen::MatrixXd::Zero(6, 18);
+H_synth.block<6, 6>(0, 0) = L;
+Z_synth = L.transpose().triangularView<Eigen::Upper>().solve(HTVr);
 ```
 
-### 3.3 update() 不变
+### 3.3 代入标准更新
+
+将 $H_s \in \mathbb{R}^{6 \times 18}$、$Z_s \in \mathbb{R}^{6}$ 代入第 2.2 节公式即可，$K$ 的维度由 $18 \times V$ 降为 $18 \times 6$：
 
 ```cpp
-// H: 6×18, Z: 6×1 → K: 18×6
-K = (H.transpose() * H + (P_in_update / 0.001).inverse()).inverse() * H.transpose();
-left  = -K * Z;
-right = -(I - K * H) * J_inv * error_state;
-P_ = (I - K * H) * P_in_update;
+K = (H_s.transpose() * H_s + (P_in / sigma2).inverse()).inverse() * H_s.transpose();
+left  = -K * Z_s;
+right = -(I - K * H_s) * J_inv * delta;
+P_out = (I - K * H_s) * P_in;
 ```
 
 ### 3.4 等价性
 
-因 $H_{\text{synth}}^\top H_{\text{synth}} = H_{\text{full}}^\top H_{\text{full}}$ 且 $H_{\text{synth}}^\top Z_{\text{synth}} = H_{\text{full}}^\top Z_{\text{full}}$，故 $M$、$KZ$、$KH$ 与 V 行版本相同。
+因 $H_s^\top H_s = H^\top H$ 且 $H_s^\top Z_s = H^\top Z$，故信息矩阵 $M$、左项 $KZ$、右项涉及的 $KH$ 与 $V$ 行基准写法相同。
 
-### 3.5 方案 A 特点
+### 3.5 路径 A 的特点
 
-| 优点 | 缺点 |
-|------|------|
-| `update()` 零改动，风险低 | 仍要建 6×18 的 H、算 $H^\top H$、$KH$ |
-| 接口兼容 | Cholesky 要求 HTVH 正定 |
-| 与现版严格等价 | 比方案 B 多一步分解 |
+| 代数层面 | 计算层面 |
+|----------|----------|
+| 与 $V$ 行 $H$ 严格等价 | 仍需显式构造 $6 \times 18$ 的 $H_s$ 并计算 $KH$ |
+| 更新公式形式不变，便于对照推导 | Cholesky 要求 HTVH 正定，退化时分解可能失败 |
+| 合成观测保留了"先建 $H$ 再更新"的结构 | 比路径 B 多一步矩阵分解 |
 
-## 4. 方案 B：累加 + update 直接吃 HTVH/HTVr
+## 4. 路径 B：更新阶段直接消费 HTVH/HTVr
 
 ### 4.1 思路
 
-观测接口改为输出汇总量，**不再构造 H、Z、K**：
-
-```cpp
-// 新接口（替代 calculate）
-virtual bool accumulate(const State18& state,
-                        Eigen::Matrix6d& HTVH,
-                        Eigen::Vector6d& HTVr) = 0;
-```
-
-`update()` 用信息滤波形式，直接从 HTVH/HTVr 算 $\Delta x$ 和 $P$。
+观测构建阶段只输出汇总量 HTVH/HTVr，更新阶段用信息滤波形式直接计算 $\Delta x$ 和 $P$，不再分配 $H$、$Z$、$K$。
 
 ### 4.2 核心等价关系
 
@@ -197,16 +193,16 @@ $$
 \Lambda = \begin{bmatrix} \text{HTVH} & 0 \\ 0 & 0 \end{bmatrix} \quad (18 \times 18)
 $$
 
-则：
+则有：
 
 $$
 H^\top H = \Lambda, \quad H^\top Z = \begin{bmatrix} \text{HTVr} \\ \mathbf{0} \end{bmatrix}
 $$
 
-信息矩阵与增益（**不显式求 K**）：
+信息矩阵：
 
 $$
-P_{\text{inv}} = \left(\frac{P_{\text{in}}}{0.001}\right)^{-1}
+P_{\text{inv}} = \left(\frac{P_{\text{in}}}{\sigma^2}\right)^{-1}
 $$
 
 $$
@@ -214,10 +210,10 @@ M = \Lambda + P_{\text{inv}}
 $$
 
 $$
-Q = M^{-1} \quad \text{（与现版 } K = M^{-1} H^\top \text{ 中的 } M^{-1} \text{ 相同）}
+Q = M^{-1} \quad \text{（对应基准写法中 } K = M^{-1} H^\top \text{ 里的 } M^{-1} \text{）}
 $$
 
-### 4.3 保留 ZLIO IE 形式（与现版等价）
+### 4.3 保留 IE 的 left + right 形式
 
 **left 项**（等价于 $-KZ$）：
 
@@ -226,17 +222,13 @@ $$
 $$
 
 ```cpp
-Eigen::Matrix<double, 18, 18> P_inv =
-    (P_in_update / 0.001).inverse();
+P_inv = (P_in / sigma2).inverse();
 P_inv.block<6, 6>(0, 0) += HTVH;
+Q = P_inv.inverse();
 
-Eigen::Matrix<double, 18, 18> Q = P_inv.inverse();
-
-Eigen::Matrix<double, 18, 1> error_dx =
-    Eigen::Matrix<double, 18, 1>::Zero();
+error_dx.setZero();
 error_dx.head<6>() = HTVr;
-
-Eigen::Matrix<double, 18, 1> left = -Q * error_dx;
+left = -Q * error_dx;
 ```
 
 **right 项**（等价于 $-(I-KH) J_{\text{inv}} \delta$）：
@@ -250,22 +242,18 @@ $$
 $$
 
 ```cpp
-Eigen::Matrix<double, 18, 18> Lambda =
-    Eigen::Matrix<double, 18, 18>::Zero();
+Lambda.setZero();
 Lambda.block<6, 6>(0, 0) = HTVH;
 
-Eigen::Matrix<double, 18, 18> KH = Q * Lambda;
-Eigen::Matrix<double, 18, 1> right =
-    -(Eigen::Matrix<double, 18, 18>::Identity() - KH)
-    * J_inv * error_state;
-
-Eigen::Matrix<double, 18, 1> update_x = left + right;
+KH = Q * Lambda;
+right = -(I - KH) * J_inv * delta;
+dx = left + right;
 ```
 
 **协方差更新**（等价于 $(I-KH)P_{\text{in}}$）：
 
 ```cpp
-P_ = (Eigen::Matrix<double, 18, 18>::Identity() - KH) * P_in_update;
+P_out = (I - KH) * P_in;
 ```
 
 ### 4.4 等价性推导
@@ -282,13 +270,13 @@ $$
 KH = M^{-1} H^\top H = M^{-1} \Lambda = Q \Lambda
 $$
 
-故 $\text{right}$、$P$ 更新与 V 行版本一致。
+故 $\text{right}$ 与 $P$ 的更新与基准写法一致。
 
-**状态仍是 18 维更新：** $Q$ 为 $18 \times 18$ 满阵，$\text{left}$ 虽只在前 6 维注入观测残差，**v、$b_g$、$b_a$、$g$ 仍通过 $P$ 交叉项被间接修正**。
+**18 维状态的间接修正：** $Q$ 为 $18 \times 18$ 满阵，$\text{left}$ 虽只在前 6 维注入观测残差，速度、零偏、重力等分量仍通过 $P$ 的交叉协方差被间接修正。
 
-### 4.5 Super-LIO 风格（不等价于现版 ZLIO）
+### 4.5 另一种常见写法（不含 right 项）
 
-Super-LIO 的 `ESKF::UpdateObserve` 使用更简形式：
+部分 LIO 实现（如 Super-LIO）的观测更新采用更简形式：
 
 $$
 P_k^{-1} \mathrel{+}= \text{HTVH}, \quad Q_k = (P_k^{-1})^{-1}
@@ -302,127 +290,89 @@ $$
 P \leftarrow (I - Q_k \cdot \text{temp\_cov}) P_k, \quad \text{temp\_cov 的 } 6 \times 6 \text{ 块} = \text{HTVH}
 $$
 
-**没有** ZLIO 的 `right = -(I-KH) J_inv δ` 项。若直接照搬 Super-LIO 更新而去掉 `right`，**迭代收敛行为可能与现版不同**（通常仍可用，但需 bag 回归验证）。
+此形式**没有** IE 的 `right` 项。与保留 `left + right` 的路径 B 在代数上不等价，迭代收敛行为可能不同。
 
-| 更新形式 | 与现版 ZLIO 关系 |
-|----------|------------------|
-| 方案 B + `left + right`（4.3 节） | **代数等价** |
-| Super-LIO 式 `dx = Q * error_dx` | **不等价**，需单独验证 |
+| 更新形式 | 与基准 IE 写法的关系 |
+|----------|----------------------|
+| 路径 B + `left + right`（4.3 节） | **代数等价** |
+| 仅 `dx = Q * error_dx` 的简化形式 | **不等价**，属于另一种更新约定 |
 
-### 4.6 方案 B 特点
+### 4.6 路径 B 的特点
 
-| 优点 | 缺点 |
-|------|------|
-| 不分配 H/Z/K，矩阵运算最少 | 需改 `CalcZHInterface` 和 `update()` |
-| 无 Cholesky，无正定失败风险 | 实现时符号/`right` 项易抄错 |
-| `ieskf_mat_ms` 预期下降最明显 | 无逐点残差向量（调试需另存） |
+| 代数层面 | 计算层面 |
+|----------|----------|
+| 保留 `left + right` 时与基准等价 | 不显式分配 $H$、$Z$、$K$，矩阵规模最小 |
+| 直接揭示 $H^\top H$、$H^\top Z$ 的压缩结构 | 需完整理解 $Q$、$Q\Lambda$ 与 $KH$ 的对应关系 |
+| 无合成观测矩阵，推导更抽象 | 无法从汇总量还原逐点残差向量 |
 
-### 4.7 方案 B 完整伪代码（单轮迭代）
+### 4.7 单轮迭代的完整流程
 
 ```cpp
-bool IESKF::update(...) {
-  for (int i = 0; i < iter_times_; ++i) {
-    error_state = getErrorState18(x_k_k, x_);
-    J_inv = ...;
-    P_in_update = J_inv * P_ * J_inv.transpose();
+// 迭代更新（单轮示意）
+for (int iter = 0; iter < max_iter; ++iter) {
+  delta = computeErrorState(x_est, x_prop);
+  J_inv = computeJacobianInverse(...);
+  P_in = J_inv * P * J_inv.transpose();
 
-    Eigen::Matrix6d HTVH = Eigen::Matrix6d::Zero();
-    Eigen::Vector6d HTVr = Eigen::Vector6d::Zero();
-    if (!calc_zh_ptr_->accumulate(x_k_k, HTVH, HTVr)) return false;
+  // 观测构建：逐点累加
+  HTVH.setZero();
+  HTVr.setZero();
+  buildObservation(state, HTVH, HTVr);
 
-    Eigen::Matrix<double, 18, 18> P_inv =
-        (P_in_update / 0.001).inverse();
-    P_inv.block<6, 6>(0, 0) += HTVH;
-    Eigen::Matrix<double, 18, 18> Q = P_inv.inverse();
+  // 信息滤波更新
+  P_inv = (P_in / sigma2).inverse();
+  P_inv.block<6, 6>(0, 0) += HTVH;
+  Q = P_inv.inverse();
 
-    Eigen::Matrix<double, 18, 1> error_dx =
-        Eigen::Matrix<double, 18, 1>::Zero();
-    error_dx.head<6>() = HTVr;
-    Eigen::Matrix<double, 18, 1> left = -Q * error_dx;
+  error_dx.setZero();
+  error_dx.head<6>() = HTVr;
+  left = -Q * error_dx;
 
-    Eigen::Matrix<double, 18, 18> Lambda =
-        Eigen::Matrix<double, 18, 18>::Zero();
-    Lambda.block<6, 6>(0, 0) = HTVH;
-    Eigen::Matrix<double, 18, 18> KH = Q * Lambda;
-    Eigen::Matrix<double, 18, 1> right =
-        -(Eigen::Matrix<double, 18, 18>::Identity() - KH)
-        * J_inv * error_state;
+  Lambda.setZero();
+  Lambda.block<6, 6>(0, 0) = HTVH;
+  KH = Q * Lambda;
+  right = -(I - KH) * J_inv * delta;
 
-    update_x = left + right;
-    // 更新 x_k_k，收敛判断 ...
-  }
-  P_ = (I - KH) * P_in_update;  // 用最后一轮 KH
+  dx = left + right;
+  // 更新状态、判断收敛 ...
 }
+P = (I - KH) * P_in;
 ```
 
-## 5. 三种方案对比总表
+## 5. 三种写法对比
 
-设有效点 $V \approx 5000$，迭代 4 轮，点云 $N \approx 25000$。
+设有效观测点数 $V$，状态维度 $n = 18$，迭代轮数 $T$。
 
-| 项目 | 现版 V 行 H | 方案 A：6 行 H | 方案 B：直接 HTVH |
-|------|-------------|----------------|-------------------|
-| 改 `calculate` 接口 | — | 否 | **是** → `accumulate` |
-| 改 `update()` | — | 否 | **是** |
-| 存储 H | $V \times 18$ | $6 \times 18$ | **无** |
-| 存储 K | $18 \times V$ | $18 \times 6$ | **无** |
+| 项目 | 基准：$V$ 行 $H$ | 路径 A：6 行合成 $H_s$ | 路径 B：直接 HTVH |
+|------|------------------|------------------------|-------------------|
+| 存储 $H$ | $V \times n$ | $6 \times n$ | **无** |
+| 存储 $K$ | $n \times V$ | $n \times 6$ | **无** |
 | Cholesky | 无 | **需要** | 不需要 |
-| $H^\top H$ 显式计算 | $O(V \cdot 18^2)$ | $O(6^2)$ via $H^\top H$ | **跳过**（已累加） |
-| $KH$ 显式计算 | $O(18^2 \cdot V)$ | $O(18^2 \cdot 6)$ | $Q \Lambda$，$O(18^2 \cdot 6)$ |
-| calculate 全点 find | 有 | 有 | 有 |
-| 与现版代数等价 | 基准 | **是** | **是**（保留 left+right） |
-| 实现风险 | — | 低 | 中 |
+| 显式计算 $H^\top H$ | $O(V n^2)$ | $O(6^2)$ | **跳过**（已累加） |
+| 计算 $KH$ | $O(n^2 V)$ | $O(n^2 \cdot 6)$ | $Q\Lambda$，$O(n^2 \cdot 6)$ |
+| 与基准代数等价 | 基准 | **是** | **是**（保留 left+right） |
 
 ## 6. 数值差异与退化
 
-| 方面 | 方案 A | 方案 B（left+right） |
+| 方面 | 路径 A | 路径 B（left+right） |
 |------|--------|----------------------|
 | 浮点累加顺序 | 极小差异 | 极小差异 |
 | Cholesky 误差 | 有 | **无** |
-| HTVH 非正定 | Cholesky 失败，需 fallback | 仅影响 $P_{\text{inv}}$ 求逆稳定性，一般仍可算 |
-| 无法还原逐点残差 | 是 | 是 |
+| HTVH 非正定 | 分解可能失败 | 影响 $P_{\text{inv}}$ 求逆稳定性 |
+| 逐点残差可还原 | 否 | 否 |
 
-## 7. 改哪些文件
+## 7. 总结
 
-| 文件 | 方案 A | 方案 B |
-|------|--------|--------|
-| `lio_zh_voxel_model.h` | 累加 + Cholesky 填 6 行 H/Z | 改为 `accumulate()` |
-| `ieskf.h` | 不改 | 新接口 + `update()` 重写 |
-| `ieskf.cpp` | 不改 | 按 4.3 节实现 |
-| `frontend.cpp` | 不改 | 不改（仍调 `update()`） |
+| 路径 | 核心思想 |
+|------|----------|
+| **路径 A** | 用 Cholesky 将 $6 \times 6$ 信息还原为 6 行合成观测，再走标准 $K$、$KH$ 公式 |
+| **路径 B** | 将 $H^\top H$、$H^\top Z$ 视为可压缩量，用 $Q$ 与 $Q\Lambda$ 直接完成 IE 更新 |
+| **共同认识** | 压缩的是**信息矩阵结构**，而非观测几何本身；点面匹配仍须逐点完成 |
 
-## 8. 实现检查清单
-
-### 公共
-
-- [ ] `J` 定义与现版 H 前 6 列一致
-- [ ] 累加时不重复乘 $w=1000$
-- [ ] 用同一 bag 对比轨迹 APE/RPE
-
-### 方案 A
-
-- [ ] Cholesky 失败时有 fallback
-- [ ] 输出 H 为 6×18 后 `update()` 行为不变
-
-### 方案 B
-
-- [ ] `left = -Q * error_dx`，`error_dx.head(6) = HTVr`
-- [ ] `KH = Q * Lambda`，`Lambda` 仅 6×6 块非零
-- [ ] `P = (I - KH) * P_in`，与现版一致
-- [ ] 若改用 Super-LIO 式更新，单独标注并做回归
-
-## 9. 总结
-
-| 方案 | 一句话 |
-|------|--------|
-| **方案 A** | 累加后 Cholesky 成 6 行 H/Z，接口不变，与 V 行等价，省矩阵但仍有 $KH$ |
-| **方案 B** | 累加后 $Q$、$Q\Lambda$ 直接算 left/right，不建 H/K，**省得最多**，需改 `update` |
-| **共同局限** | 均不减少 calculate 里每轮全点体素 find（`ieskf_calc_ms` 主因） |
-
-**推荐路径：** 若求稳，先做方案 A；确认收益后再上方案 B 进一步压低 `ieskf_mat_ms`。
+理解这两条路径的关键，在于认清 $H$ 的稀疏列结构与 $H^\top H$ 低秩块之间的对应关系。路径 A 更贴近"先观测、后滤波"的教科书形式；路径 B 则直接暴露了信息滤波中"只需汇总量"的本质。
 
 ## 参考
 
 - **ieskf_lio 项目**：https://github.com/Zero-Kq/ieskf_lio
-- **ZLIO 观测模块 lioZH.hpp**：https://github.com/Zero-Kq/ieskf_lio/blob/master/include/ieskf_slam/modules/lioZH.hpp
-- **ZLIO IESKF 更新 ieskf.cpp**：https://github.com/Zero-Kq/ieskf_lio/blob/master/src/ieskf_slam/ieskf.cpp
 - **Super-LIO ESKF 实现**：https://github.com/Liansheng-Wang/Super-LIO/blob/ros2/src/super_lio/src/lio/ESKF.cpp
+- **FAST-LIO2**：https://github.com/hku-mars/FAST_LIO
