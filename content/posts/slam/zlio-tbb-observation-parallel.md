@@ -2,7 +2,7 @@
 title = 'ZLIO 观测模型：用 TBB 并行累加点面信息矩阵'
 description = "说明 ZLIO 为何用 TBB 替代 OpenMP、任务窃取调度是什么，以及 parallel_for 配合线程局部累加器的用法"
 date = '2026-08-10'
-draft = true
+draft = false
 tags = ["slam", "优化", "C++", "学习笔记"]
 categories = ["SLAM"]
 toc = true
