@@ -67,4 +67,7 @@ async function processHtmlFiles() {
     console.log(`Shiki post-processing complete! Updated ${processedCount} files.`);
 }
 
-processHtmlFiles().catch(console.error);
+processHtmlFiles().catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+});
