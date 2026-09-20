@@ -29,7 +29,8 @@
                 最新文章
             </h3>
             <ul class="recent-posts-list">
-                {{- range first 3 (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+                {{- $recentPosts := where site.RegularPages "Type" "in" site.Params.mainSections }}
+                {{- range first 3 ($recentPosts.ByDate.Reverse) }}
                 <li class="recent-post-item">
                     <a href="{{ .Permalink }}" class="recent-post-link">{{ .Title }}</a>
                 </li>

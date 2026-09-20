@@ -3,6 +3,7 @@ title = '平面拟合方法'
 description = "本文将详细介绍如何估计平面参数，并聚焦于两种常用的实现方法：PCA（主成分分析）法和线性最小二乘法。"
 date = '2026-07-05'
 draft = false
+weight = 3
 tags = ["slam", "学习笔记"]
 categories = ["SLAM"]
 slug = ""

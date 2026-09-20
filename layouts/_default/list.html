@@ -6,6 +6,7 @@
     <main class="post-list-container">
         {{- if .IsHome }}
         {{- partial "home_info.html" . }}
+        <h2 class="featured-posts-title">精选文章</h2>
         {{- end }}
 
         {{- if not .IsHome | and .Title }}
@@ -24,12 +25,21 @@
         {{- if .IsHome }}
         {{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
         {{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
+        {{- $pages = where $pages "Weight" "gt" 0 }}
+        {{- $pages = first 6 ($pages.ByWeight) }}
+        {{- else }}
+        {{- $pages = $pages.ByDate.Reverse }}
         {{- end }}
 
-        {{- $paginator := .Paginate $pages }}
+        {{- $displayPages := $pages }}
+        {{- $paginator := false }}
+        {{- if not .IsHome }}
+        {{- $paginator = .Paginate $pages }}
+        {{- $displayPages = $paginator.Pages }}
+        {{- end }}
         {{- $term := .Data.Term }}
 
-        {{- range $index, $page := $paginator.Pages }}
+        {{- range $index, $page := $displayPages }}
         {{- if eq $index 0 }}
         <div class="posts-group">
         {{- end }}
@@ -62,12 +72,18 @@
             {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
             <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
         </article>
-        {{- if eq $index (sub (len $paginator.Pages) 1) }}
+        {{- if eq $index (sub (len $displayPages) 1) }}
         </div>
         {{- end }}
         {{- end }}
 
-        {{- if gt $paginator.TotalPages 1 }}
+        {{- if .IsHome }}
+        <footer class="page-footer">
+            <nav class="pagination">
+                <a class="next" href="{{ "/posts/" | relLangURL }}">更多 &gt;&gt;</a>
+            </nav>
+        </footer>
+        {{- else if gt $paginator.TotalPages 1 }}
         <footer class="page-footer">
             <nav class="pagination">
                 {{- if $paginator.HasPrev }}

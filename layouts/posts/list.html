@@ -16,7 +16,7 @@
         </header>
         {{- end }}
 
-        {{- $pages := .Pages }}
+        {{- $pages := .Pages.ByDate.Reverse }}
         {{- $paginator := .Paginate $pages }}
         {{- $term := .Data.Term }}
 
