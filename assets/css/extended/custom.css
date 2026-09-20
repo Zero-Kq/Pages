@@ -54,7 +54,7 @@ body.list {
    ===================== */
 .three-column-layout {
     display: grid;
-    grid-template-columns: 200px 840px 220px;
+    grid-template-columns: 200px minmax(0, 840px) 220px;
     gap: var(--gap);
     width: 100%;
     max-width: 1350px;
@@ -65,9 +65,9 @@ body.list {
     justify-content: center;
 }
 
-/* 当右侧边栏没有内容时，改为两栏并居中 */
-.three-column-layout:not(:has(.sidebar-right .sidebar-box)) {
-    grid-template-columns: 200px 840px;
+/* 空右栏时使用两栏；:where 保持低优先级，让窄屏单栏规则能够覆盖。 */
+.three-column-layout:where(:not(:has(.sidebar-right .sidebar-box))) {
+    grid-template-columns: 200px minmax(0, 840px);
 }
 
 /* 三栏布局占满整个 .main 容器宽度 */
@@ -76,7 +76,7 @@ body.list {
     padding: 0 !important;
 }
 
-/* 确保文章内容区域不收缩 */
+/* 允许内容列随窗口收缩，避免长文本撑开网格。 */
 .post-single,
 .post-list-container,
 .terms-page-wrapper {
@@ -552,8 +552,9 @@ body.list {
 
 @media (max-width: 1200px) {
     .three-column-layout {
-        grid-template-columns: 1fr;
-        padding: 0 var(--gap);
+        grid-template-columns: minmax(0, 1fr);
+        max-width: calc(840px + var(--gap) * 2);
+        padding: var(--gap);
     }
 
     .sidebar-left,
@@ -570,7 +571,7 @@ body.list {
 
 @media (max-width: 768px) {
     .three-column-layout {
-        padding: 0 calc(var(--gap) / 2);
+        padding: var(--gap) calc(var(--gap) / 2);
     }
 }
 
@@ -637,8 +638,10 @@ body.list {
 }
 
 .home-info-stats {
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    justify-items: center;
     padding: 16px var(--gap);
     background: var(--tag-bg);
     margin: 0 var(--gap) var(--gap) var(--gap);
@@ -717,11 +720,75 @@ body.list {
 .highlight pre code {
     line-height: 1.5 !important;
 }
-.highlight pre code .line:empty::before,
-.highlight pre code .line:has(> :empty:only-child)::before {
-    content: ' ';
+
+
+/* Preserve source whitespace instead of laying each highlighted line out as a grid item. */
+.post-content pre > code {
+    display: block;
     white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
 }
-.highlight pre code .line {
-    min-height: 1.5em;
+.post-content .highlight pre code .line { display: inline; }
+.highlight .lntd:first-child, .highlight .lnt, .highlight .ln {
+    -webkit-user-select: none;
+    user-select: none;
+}
+/* Float the copy label over the corner without adding a toolbar row. */
+.post-content .code-copy-block {
+    position: relative;
+    overflow: hidden;
+    background: var(--code-block-bg);
+    border-radius: var(--radius);
+}
+/* Clip all inner backgrounds to the outer frame's four rounded corners. */
+.post-content .code-copy-block pre,
+.post-content .code-copy-block pre > code,
+.post-content .code-copy-block table {
+    border-radius: 0;
+}
+.code-copy-button {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    z-index: 1;
+    padding: 2px 9px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    color: #eee;
+    background: #333;
+    font: 12px/1.5 sans-serif;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.code-copy-button:hover { background: #484848; }
+.code-copy-button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.code-copy-button:disabled { cursor: wait; }
+
+/* 手机宽度下避免统计项、文章封面挤占正文空间。 */
+@media (max-width: 600px) {
+    .home-info-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-items: start;
+    }
+
+    .home-info-stats .stat-item {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .home-info-stats .stat-text {
+        white-space: nowrap;
+    }
+
+    .post-entry {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .post-entry .entry-cover {
+        width: 100%;
+    }
 }

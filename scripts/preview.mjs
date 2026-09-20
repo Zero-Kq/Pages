@@ -1,12 +1,19 @@
 import http from 'node:http';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { build, root } from './build.mjs';
 
 const port = Number(process.env.PORT || 1313);
-const baseURL = `http://localhost:${port}/`;
-const output = path.join(root, 'public');
+const host = process.env.HOST || '0.0.0.0';
+const baseURL = process.env.BASE_URL || `http://localhost:${port}/`;
+// Build locally on Windows: repeated Hugo writes to SMB shares can fail.
+// A project-specific folder also keeps different checkouts separate.
+const output = process.platform === 'win32'
+    ? path.join(tmpdir(), 'pages-preview', createHash('sha256').update(root).digest('hex').slice(0, 16))
+    : path.join(root, '.preview');
 let revision = 0;
 let pending = true;
 let building;
@@ -19,7 +26,7 @@ async function rebuild() {
         while (pending) {
             pending = false;
             try {
-                await build(['--baseURL', baseURL]);
+                await build(['--baseURL', baseURL], { destination: output });
                 buildError = undefined;
                 revision++;
             } catch (error) {
@@ -101,4 +108,4 @@ setInterval(() => {
 }, 1000);
 
 await rebuild();
-server.listen(port, '127.0.0.1', () => console.log(`Preview ready: ${baseURL} (Hugo + Shiki). Press Ctrl+C to stop.`));
+server.listen(port, host, () => console.log(`Preview ready: ${baseURL} (listening on ${host}:${port}, Hugo + Shiki). Press Ctrl+C to stop.`));

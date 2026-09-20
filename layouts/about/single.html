@@ -1,99 +1,50 @@
 {{- define "main" }}
-
-<article class="post-single about-page">
-    <style>
-    .about-page {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: calc(100vh - var(--header-height) - 100px);
-    }
-    .about-page .post-header {
-        display: none !important;
-    }
-    .about-page .post-content {
-        text-align: center;
-        border: none !important;
-    }
-
-    /* 社交图标样式 */
-    .about-page .social-icons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .about-page .social-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 12px 20px;
-        background: var(--tertiary);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        min-width: 200px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .about-page .social-item:hover {
-        background: var(--secondary);
-        border-color: var(--primary);
-        transform: translateX(4px);
-    }
-
-    .about-page .social-item .icon-box {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: var(--theme);
-        border-radius: 8px;
-    }
-
-    .about-page .social-item .icon-box svg {
-        width: 20px;
-        height: 20px;
-        fill: var(--primary);
-    }
-
-    .about-page .social-item .label {
-        color: var(--primary);
-        font-size: 14px;
-        font-weight: 500;
-        position: relative;
-        z-index: 2;
-    }
-    </style>
-
-    <div class="post-content">
-        <div class="social-icons">
-            <a href="https://github.com/Zero-Kq" target="_blank" rel="noopener" class="social-item">
-                <span class="icon-box">
-                    <svg viewBox="0 0 496 512" height="1.4em">
-                        <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path>
-                    </svg>
-                </span>
-                <span class="label">GitHub</span>
-            </a>
-
-            <a href="mailto:your.email@example.com" class="social-item">
-                <span class="icon-box">
-                    <svg viewBox="0 0 24 24" height="1.2em" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="2" y="4" width="20" height="16" rx="2"/>
-                        <line x1="2" y1="4" x2="12" y2="14"/>
-                        <line x1="22" y1="4" x2="12" y2="14"/>
-                    </svg>
-                </span>
-                <span class="label">邮箱 617199856@qq.com</span>
-            </a>
+<article class="about-page" aria-labelledby="about-title">
+    <section aria-labelledby="about-title">
+        <p class="about-eyebrow">A LITTLE ABOUT ME</p>
+        <div class="about-heading">
+            <div>
+                <h1 id="about-title">你好，我是 <span>{{ site.Title }}</span>.</h1>
+                <p class="about-tagline">在学习中探索，在记录中成长。</p>
+            </div>
+            {{- with site.Params.profileMode.imageUrl }}
+            <img class="about-avatar" src="{{ . | relURL }}" alt="{{ site.Title }} 的头像" width="88" height="88">
+            {{- end }}
         </div>
-    </div>
-</article>
+        <p class="about-intro">
+            欢迎来到我的个人博客。这里收藏着我学习技术的过程：<br>
+            从一个概念的理解，到一段代码的实践，再到一次问题的解决。<br>
+            <strong>把走过的路记下来，也希望能为你提供一点参考。</strong>
+        </p>
+        <ul class="about-topics" aria-label="博客主题">
+            <li>SLAM</li>
+            <li>ROS</li>
+            <li>Linux</li>
+            <li>计算机视觉</li>
+        </ul>
+    </section>
 
-{{- end }}{{/* end main */}}
+    <section class="about-contact-section" aria-labelledby="about-contact-title">
+        <h2 id="about-contact-title">保持联系</h2>
+        <div>
+            <p class="about-contact-intro">如果文章对你有帮助，或有想交流的问题，欢迎来打个招呼。</p>
+            <div class="about-contacts">
+                <a class="about-contact" href="https://github.com/Zero-Kq" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.58 9.58 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>
+                    </svg>
+                    GitHub <span class="about-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a class="about-contact" href="mailto:617199856@qq.com">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <path d="m3 6 9 7 9-7"/>
+                    </svg>
+                    617199856@qq.com <span class="about-arrow" aria-hidden="true">↗</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    <p class="about-signoff">保持好奇，慢慢积累。</p>
+</article>
+{{- end }}

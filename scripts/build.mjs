@@ -13,12 +13,16 @@ function run(command, args) {
     });
 }
 
-export async function build(args = []) {
+export async function build(args = [], { destination } = {}) {
+    // Preserve Hugo's CLI destination option and pass the same directory to Shiki.
+    const index = args.findLastIndex(arg => arg === '--destination' || arg === '-d' || arg.startsWith('--destination='));
+    const cliDestination = index < 0 ? undefined : (args[index].startsWith('--destination=') ? args[index].slice('--destination='.length) : args[index + 1]);
+    const output = path.resolve(root, destination || cliDestination || 'public');
     // WinGet's installation may not yet be on the current terminal's PATH.
     const wingetHugo = path.join(process.env.LOCALAPPDATA || '', 'Microsoft/WinGet/Links/hugo.exe');
     const hugo = process.env.HUGO_BINARY || (process.platform === 'win32' && existsSync(wingetHugo) ? wingetHugo : 'hugo');
-    await run(hugo, ['--buildDrafts', '--gc', '--cleanDestinationDir', ...args]);
-    await run(process.execPath, ['scripts/shiki-highlight.mjs']);
+    await run(hugo, ['--buildDrafts', '--gc', '--cleanDestinationDir', ...args, '--destination', output]);
+    await run(process.execPath, ['scripts/shiki-highlight.mjs', output]);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

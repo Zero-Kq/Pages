@@ -15,7 +15,7 @@ async function processHtmlFiles() {
         langs: ['cpp', 'bash', 'yaml', 'json', 'python', 'go', 'javascript', 'html', 'css', 'shell', 'plaintext', 'text']
     });
 
-    const publicDir = path.resolve(__dirname, '../public');
+    const publicDir = path.resolve(process.argv[2] || path.join(__dirname, '../public'));
     const htmlFiles = globSync('**/*.html', { cwd: publicDir, absolute: true });
 
     console.log(`Found ${htmlFiles.length} HTML files to process.`);
