@@ -22,9 +22,11 @@
         {{- end }}
 
         {{- $pages := union .RegularPages .Sections }}
+        {{- $latestPages := slice }}
         {{- if .IsHome }}
         {{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
         {{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
+        {{- $latestPages = first 6 ($pages.ByDate.Reverse) }}
         {{- $pages = where $pages "Weight" "gt" 0 }}
         {{- $pages = first 6 ($pages.ByWeight) }}
         {{- else }}
@@ -78,6 +80,19 @@
         {{- end }}
 
         {{- if .IsHome }}
+        {{- if $latestPages }}
+        <section class="latest-posts" aria-labelledby="latest-posts-title">
+            <h2 id="latest-posts-title" class="featured-posts-title">最新文章</h2>
+            <ul class="latest-posts-list">
+                {{- range $latestPages }}
+                <li>
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                </li>
+                {{- end }}
+            </ul>
+        </section>
+        {{- end }}
         <footer class="page-footer">
             <nav class="pagination">
                 <a class="next" href="{{ "/posts/" | relLangURL }}">更多 &gt;&gt;</a>

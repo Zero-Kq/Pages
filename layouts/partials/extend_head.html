@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="{{ $termsCSS.RelPermalink }}">
 {{- end }}
 
+{{- if and .IsPage (.Param "math") }}
 <!-- KaTeX 数学公式渲染 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
@@ -16,11 +17,13 @@
     delimiters: [
       {left: '$$', right: '$$', display: true},
       {left: '$', right: '$', display: false},
-      {left: '\\\[', right: '\\\]', display: true},
-      {left: '\\\(', right: '\\\)', display: false}
+      {left: '\\[', right: '\\]', display: true},
+      {left: '\\(', right: '\\)', display: false}
     ]
   });"></script>
+{{- end }}
 
+{{- if and .IsPage (in .Content "class=\"mermaid\"") }}
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
   mermaid.initialize({
@@ -30,4 +33,4 @@
     fontFamily: 'inherit'
   });
 </script>
-
+{{- end }}
